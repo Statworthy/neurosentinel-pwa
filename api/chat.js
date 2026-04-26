@@ -30,7 +30,7 @@ export default async function handler(req, res) {
   }
 
   const payload = {
-    model: body.model || 'claude-sonnet-4-20250514',
+    model: body.model || 'claude-opus-4-7',
     max_tokens: Math.min(Number(body.max_tokens) || 1000, 4000),
     messages: body.messages,
     ...(body.system ? { system: body.system } : {}),
