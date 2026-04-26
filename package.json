@@ -1,0 +1,13 @@
+{
+  "name": "neurosentinel-pwa",
+  "version": "1.0.0",
+  "private": true,
+  "description": "NeuroSentinel CTE diagnostic PWA with serverless Anthropic proxy.",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
+  }
+}

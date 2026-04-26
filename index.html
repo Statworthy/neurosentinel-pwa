@@ -1,0 +1,1610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#6d4aff">
+<meta name="description" content="NeuroSentinel — AI blood-based CTE / TES diagnostic decision support.">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/icons/icon-192.png">
+<title>NeuroSentinel™ | AI Blood-Based CTE Diagnostic Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0612;
+    --bg-mid: #14102a;
+    --bg-light: #221a44;
+    --violet: #6d4aff;
+    --violet-bright: #9b7dff;
+    --cyan: #1ad6d6;
+    --cyan-bright: #56e8e8;
+    --magenta: #d946ef;
+    --magenta-bright: #ec79ff;
+    --red: #c0392b;
+    --red-bright: #ff5252;
+    --gold: #f39c12;
+    --gold-bright: #f1c40f;
+    --green: #22c55e;
+    --green-bright: #4ade80;
+    --white: #ece8ff;
+    --muted: #8e83b8;
+    --border: rgba(155,125,255,0.18);
+    --glow: rgba(155,125,255,0.3);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ANIMATED NEURAL GRID BG */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background:
+      radial-gradient(ellipse at 20% 0%, rgba(109,74,255,0.08), transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(217,70,239,0.06), transparent 50%),
+      linear-gradient(rgba(155,125,255,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(155,125,255,0.025) 1px, transparent 1px);
+    background-size: auto, auto, 44px 44px, 44px 44px;
+    pointer-events:none; z-index:0;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky; top:0; z-index:100;
+    background: rgba(10,6,18,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    display: flex; align-items:center; justify-content:space-between;
+    height: 64px;
+  }
+  .logo {
+    display:flex; align-items:center; gap:12px;
+  }
+  .logo-brain {
+    width:38px; height:38px;
+    position:relative;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .logo-brain svg {
+    width:100%; height:100%;
+    filter: drop-shadow(0 0 6px rgba(155,125,255,0.6));
+    animation: brain-pulse 2.4s ease-in-out infinite;
+  }
+  @keyframes brain-pulse {
+    0%,100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(155,125,255,0.6)); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(217,70,239,0.8)); }
+  }
+  .logo-text {
+    font-family:'Orbitron',monospace;
+    font-size:19px; font-weight:700;
+    letter-spacing:2px;
+    color: var(--white);
+  }
+  .logo-text span { color: var(--violet-bright); }
+  .logo-sub {
+    font-family:'Space Mono',monospace;
+    font-size:9px; color: var(--muted);
+    letter-spacing:1px; margin-top:-2px;
+  }
+  .status-bar {
+    display:flex; align-items:center; gap:20px;
+  }
+  .status-pill {
+    display:flex; align-items:center; gap:6px;
+    font-family:'Space Mono',monospace; font-size:10px;
+    color: var(--cyan-bright);
+    background: rgba(26,214,214,0.08);
+    border: 1px solid rgba(26,214,214,0.25);
+    padding: 4px 12px; border-radius:20px;
+  }
+  .status-dot {
+    width:7px; height:7px; border-radius:50%;
+    background: var(--green-bright);
+    animation: pulse-dot 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%,100%{opacity:1;transform:scale(1);}
+    50%{opacity:0.5;transform:scale(0.7);}
+  }
+  .patient-id {
+    font-family:'Space Mono',monospace; font-size:10px;
+    color: var(--muted);
+  }
+
+  /* MAIN TABS */
+  .main-tabs {
+    display:flex; gap:0;
+    background: var(--bg-mid);
+    border-bottom: 1px solid var(--border);
+    padding: 0 32px;
+    position: sticky; top:64px; z-index:90;
+    overflow-x:auto;
+  }
+  .tab-btn {
+    background:none; border:none; cursor:pointer;
+    font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:600;
+    letter-spacing:1px; text-transform:uppercase;
+    color: var(--muted);
+    padding: 16px 22px;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    display:flex; align-items:center; gap:8px;
+    white-space:nowrap;
+  }
+  .tab-btn:hover { color: var(--white); }
+  .tab-btn.active {
+    color: var(--violet-bright);
+    border-bottom-color: var(--violet-bright);
+    background: rgba(109,74,255,0.07);
+  }
+  .tab-icon { font-size:16px; }
+
+  /* CONTENT */
+  .tab-content { display:none; padding:32px; position:relative; z-index:1; }
+  .tab-content.active { display:block; }
+
+  /* ─── BIOMARKER CARDS ─── */
+  .biomarker-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+    gap:20px; margin-bottom:28px;
+  }
+  .bm-card {
+    background: var(--bg-mid);
+    border: 1px solid var(--border);
+    border-radius:12px; padding:20px;
+    position:relative; overflow:hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .bm-card::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:3px;
+  }
+  .bm-card.normal::before { background: var(--green); }
+  .bm-card.elevated::before { background: var(--gold); }
+  .bm-card.critical::before { background: var(--magenta); animation: flash-mag 0.8s ease-in-out infinite alternate; }
+  @keyframes flash-mag { from{opacity:1;}to{opacity:0.35;} }
+  .bm-card.normal { border-color: rgba(34,197,94,0.3); }
+  .bm-card.elevated { border-color: rgba(243,156,18,0.35); }
+  .bm-card.critical { border-color: rgba(217,70,239,0.5); box-shadow:0 0 22px rgba(217,70,239,0.15); }
+
+  .bm-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; gap:10px; }
+  .bm-name { font-size:17px; font-weight:700; letter-spacing:0.5px; }
+  .bm-badge {
+    font-family:'Space Mono',monospace; font-size:9px; font-weight:700;
+    padding:3px 8px; border-radius:4px; letter-spacing:1px;
+    flex-shrink:0;
+  }
+  .badge-normal { background:rgba(34,197,94,0.2); color:var(--green-bright); border:1px solid rgba(34,197,94,0.4); }
+  .badge-elevated { background:rgba(243,156,18,0.2); color:var(--gold-bright); border:1px solid rgba(243,156,18,0.4); }
+  .badge-critical { background:rgba(217,70,239,0.2); color:var(--magenta-bright); border:1px solid rgba(217,70,239,0.5); }
+
+  .bm-value-row { display:flex; align-items:baseline; gap:6px; margin-bottom:8px; }
+  .bm-value { font-family:'Orbitron',monospace; font-size:32px; font-weight:700; line-height:1; }
+  .bm-unit { font-size:12px; color:var(--muted); font-family:'Space Mono',monospace; }
+  .bm-range { font-size:12px; color:var(--muted); margin-bottom:12px; }
+
+  .bm-bar-track {
+    height:6px; background:rgba(255,255,255,0.07);
+    border-radius:3px; overflow:hidden;
+  }
+  .bm-bar-fill {
+    height:100%; border-radius:3px;
+    transition: width 0.8s cubic-bezier(.4,0,.2,1);
+  }
+  .fill-normal { background: linear-gradient(90deg, #22c55e, #4ade80); }
+  .fill-elevated { background: linear-gradient(90deg, #f39c12, #f1c40f); }
+  .fill-critical { background: linear-gradient(90deg, #d946ef, #ec79ff); animation: shimmer-fill 1s ease-in-out infinite alternate; }
+  @keyframes shimmer-fill { to{filter:brightness(1.45);} }
+
+  .bm-sparkline { margin-top:10px; height:40px; }
+  .bm-sparkline canvas { width:100%; height:100%; }
+
+  /* Controls strip */
+  .controls-strip {
+    display:flex; gap:12px; align-items:center;
+    flex-wrap:wrap; margin-bottom:28px;
+    background: var(--bg-mid);
+    border: 1px solid var(--border);
+    border-radius:10px; padding:16px 20px;
+  }
+  .ctrl-label {
+    font-family:'Space Mono',monospace; font-size:10px;
+    color: var(--muted); letter-spacing:1px;
+    margin-right:4px;
+  }
+  .scenario-btn {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--white); border-radius:6px;
+    padding: 7px 16px; cursor:pointer;
+    font-family:'Rajdhani',sans-serif; font-size:13px; font-weight:600;
+    letter-spacing:0.5px;
+    transition: all 0.2s;
+  }
+  .scenario-btn:hover { background:rgba(155,125,255,0.12); border-color:var(--violet); color:var(--violet-bright); }
+  .scenario-btn.active { background:rgba(155,125,255,0.18); border-color:var(--violet-bright); color:var(--violet-bright); }
+  .scenario-btn.danger { border-color:rgba(217,70,239,0.4); color:var(--magenta-bright); }
+  .scenario-btn.danger.active { background:rgba(217,70,239,0.18); border-color:var(--magenta); color:var(--magenta-bright); }
+
+  /* Section title */
+  .section-title {
+    font-family:'Orbitron',monospace; font-size:12px;
+    letter-spacing:3px; color:var(--violet-bright);
+    text-transform:uppercase; margin-bottom:16px;
+    display:flex; align-items:center; gap:10px;
+  }
+  .section-title::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  /* AI Panel */
+  .ai-panel {
+    background: var(--bg-mid);
+    border: 1px solid rgba(155,125,255,0.3);
+    border-radius:12px; padding:24px;
+    position:relative; overflow:hidden;
+  }
+  .ai-panel::before {
+    content:''; position:absolute; top:0; right:0;
+    width:240px; height:240px;
+    background: radial-gradient(circle, rgba(155,125,255,0.1), transparent 70%);
+    pointer-events:none;
+  }
+  .ai-header {
+    display:flex; align-items:center; gap:10px; margin-bottom:16px;
+  }
+  .ai-icon {
+    width:34px; height:34px; border-radius:8px;
+    background: linear-gradient(135deg, var(--violet), var(--magenta));
+    border:1px solid var(--violet-bright);
+    display:flex; align-items:center; justify-content:center;
+    font-size:16px;
+    box-shadow: 0 0 14px rgba(155,125,255,0.4);
+  }
+  .ai-title { font-family:'Orbitron',monospace; font-size:13px; color:var(--violet-bright); letter-spacing:2px; }
+  .ai-response {
+    font-size:15px; line-height:1.7; color:var(--white);
+    min-height:80px;
+  }
+  .ai-response.loading::after {
+    content:''; display:inline-block;
+    width:8px; height:16px;
+    background:var(--violet-bright); margin-left:3px;
+    animation: blink 0.7s step-end infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+
+  .alert-box {
+    margin-top:14px; padding:12px 16px;
+    border-radius:8px; font-size:13px; font-weight:600;
+    display:flex; align-items:center; gap:8px;
+  }
+  .alert-critical {
+    background: rgba(217,70,239,0.12);
+    border: 1px solid rgba(217,70,239,0.4);
+    color: var(--magenta-bright);
+  }
+  .alert-warning {
+    background: rgba(243,156,18,0.12);
+    border: 1px solid rgba(243,156,18,0.4);
+    color: var(--gold-bright);
+  }
+  .alert-ok {
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: var(--green-bright);
+  }
+
+  /* TES Risk Score */
+  .tes-grid { display:grid; grid-template-columns: 1fr 1fr; gap:24px; margin-bottom:28px; }
+  @media (max-width: 900px) { .tes-grid { grid-template-columns:1fr; } }
+  .tes-card {
+    background: var(--bg-mid);
+    border: 1px solid var(--border);
+    border-radius:12px; padding:24px;
+  }
+  .tes-card h3 {
+    font-family:'Orbitron',monospace; font-size:12px;
+    letter-spacing:2.5px; color:var(--violet-bright);
+    margin-bottom:16px; text-transform:uppercase;
+  }
+  .input-group { display:flex; flex-direction:column; gap:6px; margin-bottom:14px; }
+  .input-label {
+    font-family:'Space Mono',monospace; font-size:11px;
+    color: var(--muted); letter-spacing:0.5px;
+    display:flex; justify-content:space-between;
+  }
+  .input-unit { color:var(--cyan-bright); }
+  .bm-input, .bm-select {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(155,125,255,0.25);
+    border-radius:6px; padding:9px 12px;
+    color: var(--white); font-family:'Space Mono',monospace; font-size:13px;
+    width:100%; outline:none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .bm-input:focus, .bm-select:focus { border-color:var(--violet-bright); box-shadow:0 0 0 2px rgba(155,125,255,0.15); }
+  .bm-input::placeholder { color:rgba(142,131,184,0.5); }
+
+  /* Risk gauge */
+  .risk-gauge-wrap {
+    display:flex; flex-direction:column; align-items:center; gap:18px; padding:20px 0;
+  }
+  .risk-gauge { position:relative; width:240px; height:140px; }
+  .risk-gauge svg { width:100%; height:100%; }
+  .risk-readout {
+    display:flex; flex-direction:column; align-items:center; gap:4px;
+  }
+  .risk-score {
+    font-family:'Orbitron',monospace; font-size:48px; font-weight:900;
+    line-height:1;
+  }
+  .risk-label {
+    font-family:'Space Mono',monospace; font-size:10px;
+    letter-spacing:2px; text-transform:uppercase;
+  }
+  .risk-detail {
+    margin-top:14px; padding:14px;
+    background: rgba(0,0,0,0.25);
+    border-radius:8px; font-size:13px; line-height:1.6;
+    border:1px solid var(--border);
+    width:100%;
+  }
+
+  /* Differential viz */
+  .diff-canvas-wrap {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius:12px; padding:24px;
+    margin-bottom:24px;
+  }
+  .diff-canvas-wrap canvas { width:100%; height:340px; display:block; }
+
+  /* About / Device tab */
+  .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  @media (max-width:900px) { .about-grid { grid-template-columns:1fr; } }
+  .about-card {
+    background:var(--bg-mid); border:1px solid var(--border); border-radius:12px; padding:24px;
+  }
+  .about-card h3 { font-family:'Orbitron',monospace; font-size:12px; letter-spacing:3px; color:var(--violet-bright); margin-bottom:18px; text-transform:uppercase; }
+  .layer-item {
+    display:flex; gap:14px; padding:11px 0; border-bottom:1px solid rgba(255,255,255,0.05);
+  }
+  .layer-item:last-child { border-bottom:none; }
+  .layer-num {
+    width:30px; height:30px; border-radius:6px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Orbitron',monospace; font-size:11px; font-weight:700;
+  }
+  .ln-1{background:rgba(109,74,255,0.3);color:var(--violet-bright);border:1px solid var(--violet);}
+  .ln-2{background:rgba(217,70,239,0.25);color:var(--magenta-bright);border:1px solid var(--magenta);}
+  .ln-3{background:rgba(34,197,94,0.2);color:var(--green-bright);border:1px solid var(--green);}
+  .ln-4{background:rgba(26,214,214,0.2);color:var(--cyan-bright);border:1px solid var(--cyan);}
+  .layer-text h4 { font-size:14px; font-weight:700; margin-bottom:3px; }
+  .layer-text p { font-size:12px; color:var(--muted); line-height:1.5; }
+
+  .spec-row {
+    display:flex; justify-content:space-between; padding:9px 0;
+    border-bottom:1px solid rgba(255,255,255,0.05); font-size:13px;
+  }
+  .spec-row:last-child { border-bottom:none; }
+  .spec-label { color:var(--muted); }
+  .spec-val { font-family:'Space Mono',monospace; color:var(--cyan-bright); }
+
+  /* Disclaimer */
+  .disclaimer {
+    background: rgba(243,156,18,0.06);
+    border: 1px solid rgba(243,156,18,0.25);
+    border-radius:8px; padding:14px 18px;
+    margin-bottom:24px;
+    font-size:12px; color:var(--gold-bright);
+    display:flex; gap:10px; align-items:flex-start;
+  }
+  .disclaimer-icon { font-size:16px; flex-shrink:0; }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar{width:6px;height:6px;}
+  ::-webkit-scrollbar-track{background:var(--bg);}
+  ::-webkit-scrollbar-thumb{background:var(--bg-light);border-radius:3px;}
+  ::-webkit-scrollbar-thumb:hover{background:var(--violet);}
+
+  /* Animations */
+  .fade-in{animation:fadeIn 0.4s ease forwards;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
+
+  .generate-btn {
+    background: linear-gradient(135deg, var(--violet), var(--magenta));
+    border: 1px solid var(--violet-bright);
+    color:var(--white); border-radius:8px;
+    padding:10px 22px; cursor:pointer;
+    font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:700;
+    letter-spacing:1px; transition:all 0.2s;
+    display:flex; align-items:center; gap:8px;
+  }
+  .generate-btn:hover{box-shadow:0 0 22px rgba(155,125,255,0.4); transform: translateY(-1px);}
+  .generate-btn:disabled{opacity:0.5;cursor:not-allowed; transform:none;}
+
+  .timestamp {
+    font-family:'Space Mono',monospace; font-size:10px; color:var(--muted);
+    margin-top:8px;
+  }
+
+  details summary {
+    cursor:pointer; background:var(--bg-mid); border:1px solid var(--border);
+    border-radius:10px; padding:13px 20px;
+    font-family:'Space Mono',monospace; font-size:11px; letter-spacing:1px;
+    color:var(--violet-bright); list-style:none;
+    display:flex; align-items:center; gap:8px;
+  }
+  details[open] summary { border-radius:10px 10px 0 0; border-bottom:none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-brain">
+      <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#9b7dff"/>
+            <stop offset="100%" stop-color="#d946ef"/>
+          </linearGradient>
+        </defs>
+        <path d="M20 6 C12 6, 8 12, 9 18 C7 19, 6 22, 8 25 C7 28, 10 32, 14 31 C16 33, 18 33, 20 32 C22 33, 24 33, 26 31 C30 32, 33 28, 32 25 C34 22, 33 19, 31 18 C32 12, 28 6, 20 6 Z" fill="url(#bg-grad)" opacity="0.95"/>
+        <path d="M20 8 L20 32 M14 13 L14 28 M26 13 L26 28" stroke="#0a0612" stroke-width="0.8" fill="none" opacity="0.5"/>
+        <circle cx="14" cy="16" r="1.2" fill="#56e8e8"/>
+        <circle cx="26" cy="16" r="1.2" fill="#56e8e8"/>
+        <circle cx="20" cy="22" r="1.2" fill="#56e8e8"/>
+        <circle cx="16" cy="26" r="1.2" fill="#56e8e8"/>
+        <circle cx="24" cy="26" r="1.2" fill="#56e8e8"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">Neuro<span>Sentinel</span>™</div>
+      <div class="logo-sub">TRUDIAGNOSTICS™ · BLOOD-BASED CTE BIOMARKER PLATFORM</div>
+    </div>
+  </div>
+  <div class="status-bar">
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      ASSAY READY
+    </div>
+    <div class="patient-id">PID: TRU-NS-2026-0117</div>
+  </div>
+</header>
+
+<nav class="main-tabs">
+  <button class="tab-btn active" onclick="switchTab('tau',this)">
+    <span class="tab-icon">🧬</span> Tau Pathology
+  </button>
+  <button class="tab-btn" onclick="switchTab('neuroglial',this)">
+    <span class="tab-icon">🔬</span> Neuro-Glial Markers
+  </button>
+  <button class="tab-btn" onclick="switchTab('differential',this)">
+    <span class="tab-icon">📊</span> CTE vs AD Differential
+  </button>
+  <button class="tab-btn" onclick="switchTab('tes',this)">
+    <span class="tab-icon">🧠</span> TES Risk Score
+  </button>
+  <button class="tab-btn" onclick="switchTab('about',this)">
+    <span class="tab-icon">⚙️</span> Platform Overview
+  </button>
+</nav>
+
+<!-- ══════════════════════════════════════════ TAU PATHOLOGY TAB -->
+<div id="tab-tau" class="tab-content active">
+
+  <div class="disclaimer">
+    <span class="disclaimer-icon">⚠</span>
+    <span><strong>Research-use prototype.</strong> CTE is currently confirmed only at autopsy. The biomarker thresholds shown here are derived from peer-reviewed plasma studies (Asken, Shahim, Kleven, Bernick et al., 2020–2025) but are NOT yet FDA-approved for in-life CTE diagnosis. NeuroSentinel™ provides Traumatic Encephalopathy Syndrome (TES) risk stratification only.</span>
+  </div>
+
+  <div class="controls-strip">
+    <span class="ctrl-label">CLINICAL SCENARIO:</span>
+    <button class="scenario-btn active" onclick="setTauScenario('healthy',this)">Healthy Control</button>
+    <button class="scenario-btn" onclick="setTauScenario('rhi_athlete',this)">RHI Athlete (Asymptomatic)</button>
+    <button class="scenario-btn danger" onclick="setTauScenario('tes_suspected',this)">⚠ TES Suspected</button>
+    <button class="scenario-btn danger" onclick="setTauScenario('tes_advanced',this)">⚠ Advanced TES</button>
+    <button class="scenario-btn" onclick="setTauScenario('ad_mimic',this)">AD Mimic (Differential)</button>
+    <div style="flex:1;"></div>
+    <button class="generate-btn" id="tau-ai-btn" onclick="runTauAI()">
+      🤖 AI Tau Pathology Analysis
+    </button>
+  </div>
+
+  <details style="margin-bottom:20px;">
+    <summary>✏️ &nbsp;MANUAL INPUT — Enter Custom Tau Biomarker Values</summary>
+    <div style="background:var(--bg-mid);border:1px solid var(--border);border-top:none;border-radius:0 0 10px 10px;padding:20px 24px;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-bottom:16px;">
+        <div class="input-group">
+          <label class="input-label">p-tau217 <span class="input-unit">(pg/mL)</span></label>
+          <input type="number" id="inp-ptau217" class="bm-input" step="0.01" min="0" placeholder="e.g. 0.30">
+          <div style="font-size:10px;color:var(--muted);">Normal &lt; 0.40</div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">p-tau181 <span class="input-unit">(pg/mL)</span></label>
+          <input type="number" id="inp-ptau181" class="bm-input" step="0.1" min="0" placeholder="e.g. 1.5">
+          <div style="font-size:10px;color:var(--muted);">Normal &lt; 2.5</div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">p-tau202/396 ratio <span class="input-unit">(unitless)</span></label>
+          <input type="number" id="inp-ptauratio" class="bm-input" step="0.01" min="0" placeholder="e.g. 1.05">
+          <div style="font-size:10px;color:var(--muted);">CTE if &gt; 1.4</div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Total tau (t-tau) <span class="input-unit">(pg/mL)</span></label>
+          <input type="number" id="inp-ttau" class="bm-input" step="0.1" min="0" placeholder="e.g. 2.0">
+          <div style="font-size:10px;color:var(--muted);">Normal &lt; 3.5</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="generate-btn" onclick="applyManualTau()">✔ Apply Values</button>
+        <button class="generate-btn" onclick="clearManualTau()" style="background:rgba(255,255,255,0.04);border-color:rgba(255,255,255,0.15);color:var(--muted);">✕ Clear</button>
+      </div>
+    </div>
+  </details>
+
+  <div class="section-title">Phosphorylated Tau Panel</div>
+  <div class="biomarker-grid" id="tau-grid"></div>
+
+  <div class="ai-panel fade-in">
+    <div class="ai-header">
+      <div class="ai-icon">🧠</div>
+      <div>
+        <div class="ai-title">NeuroSentinel Tau Pathology Engine</div>
+        <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">Powered by Claude Sonnet · Phospho-tau epitope-specific reasoning</div>
+      </div>
+    </div>
+    <div class="ai-response" id="tau-ai-response">
+      Select a clinical scenario above and click <strong>AI Tau Pathology Analysis</strong> to receive a detailed assessment of phospho-tau patterns and CTE-specific epitope signatures.
+    </div>
+    <div id="tau-ai-alert"></div>
+    <div class="timestamp" id="tau-ai-timestamp"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ NEURO-GLIAL TAB -->
+<div id="tab-neuroglial" class="tab-content">
+  <div class="controls-strip">
+    <span class="ctrl-label">CLINICAL SCENARIO:</span>
+    <button class="scenario-btn active" onclick="setNgScenario('healthy',this)">Healthy Baseline</button>
+    <button class="scenario-btn" onclick="setNgScenario('acute_concussion',this)">Acute Concussion</button>
+    <button class="scenario-btn" onclick="setNgScenario('subacute',this)">Subacute RHI</button>
+    <button class="scenario-btn danger" onclick="setNgScenario('chronic_inflammation',this)">⚠ Chronic Neuroinflammation</button>
+    <button class="scenario-btn danger" onclick="setNgScenario('progressive_degen',this)">⚠ Progressive Degeneration</button>
+    <div style="flex:1;"></div>
+    <button class="generate-btn" id="ng-ai-btn" onclick="runNgAI()">
+      🤖 AI Neuro-Glial Analysis
+    </button>
+  </div>
+
+  <div class="section-title">Neuronal Injury & Glial Response Panel</div>
+  <div class="biomarker-grid" id="ng-grid"></div>
+
+  <div class="ai-panel fade-in">
+    <div class="ai-header">
+      <div class="ai-icon">🔬</div>
+      <div>
+        <div class="ai-title">NeuroSentinel Neuro-Glial Engine</div>
+        <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">NfL · GFAP · UCH-L1 · S100B trajectory analysis</div>
+      </div>
+    </div>
+    <div class="ai-response" id="ng-ai-response">
+      Select a scenario and click <strong>AI Neuro-Glial Analysis</strong> for an integrated assessment of axonal injury, astrogliosis, and neuroinflammatory burden.
+    </div>
+    <div id="ng-ai-alert"></div>
+    <div class="timestamp" id="ng-ai-timestamp"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ DIFFERENTIAL TAB -->
+<div id="tab-differential" class="tab-content">
+  <div class="section-title">CTE vs Alzheimer's Disease — Plasma Biomarker Differential</div>
+
+  <div style="background:var(--bg-mid);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px;font-size:13px;line-height:1.7;color:var(--white);">
+    <strong style="color:var(--cyan-bright);">Clinical rationale:</strong> Both CTE and Alzheimer's disease are tauopathies, making differential diagnosis difficult on tau alone. However, plasma <strong>p-tau217</strong> and the <strong>Aβ42/40 ratio</strong> separate the two: AD shows markedly elevated p-tau217 (often &gt; 0.6 pg/mL) and reduced Aβ42/40 (&lt; 0.06), while CTE typically shows only mild p-tau217 elevation with preserved Aβ42/40. The <strong>p-tau202/p-tau396 ratio</strong> further distinguishes — significantly higher in CTE due to differential phosphorylation at the Ser202 epitope.
+  </div>
+
+  <div class="controls-strip">
+    <span class="ctrl-label">PROFILE:</span>
+    <button class="scenario-btn active" onclick="setDiffProfile('control',this)">Healthy Control</button>
+    <button class="scenario-btn" onclick="setDiffProfile('cte',this)">CTE Profile</button>
+    <button class="scenario-btn" onclick="setDiffProfile('ad',this)">Alzheimer's Profile</button>
+    <button class="scenario-btn" onclick="setDiffProfile('mixed',this)">Mixed Pathology</button>
+    <div style="flex:1;"></div>
+    <button class="generate-btn" id="diff-ai-btn" onclick="runDiffAI()">
+      🤖 AI Differential Diagnosis
+    </button>
+  </div>
+
+  <div class="diff-canvas-wrap">
+    <canvas id="diff-canvas"></canvas>
+  </div>
+
+  <div class="biomarker-grid" id="diff-grid"></div>
+
+  <div class="ai-panel fade-in" style="margin-top:24px;">
+    <div class="ai-header">
+      <div class="ai-icon">📊</div>
+      <div>
+        <div class="ai-title">NeuroSentinel Differential Engine</div>
+        <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">CTE / AD / Mixed pathology classifier</div>
+      </div>
+    </div>
+    <div class="ai-response" id="diff-ai-response">
+      Select a profile and run the AI differential to receive a likelihood-based classification across CTE, AD, and mixed-pathology presentations.
+    </div>
+    <div id="diff-ai-alert"></div>
+    <div class="timestamp" id="diff-ai-timestamp"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ TES RISK TAB -->
+<div id="tab-tes" class="tab-content">
+  <div class="section-title">Traumatic Encephalopathy Syndrome (TES) Risk Calculator</div>
+
+  <div style="background:var(--bg-mid);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:24px;font-size:13px;line-height:1.7;color:var(--white);">
+    Per the <strong style="color:var(--cyan-bright);">2021 NINDS Consensus Diagnostic Criteria</strong> (Katz, Bernick, Dodick et al.), TES is a clinical syndrome based on substantial RHI exposure plus core neurobehavioral features. NeuroSentinel integrates the consensus criteria with plasma biomarker data to compute a composite risk score.
+  </div>
+
+  <div class="tes-grid">
+    <div class="tes-card">
+      <h3>Exposure & Clinical Inputs</h3>
+
+      <div class="input-group">
+        <label class="input-label">Sport / Exposure Type</label>
+        <select class="bm-select" id="tes-sport" onchange="computeTES()">
+          <option value="football">American Football</option>
+          <option value="boxing">Boxing</option>
+          <option value="mma">MMA / Combat Sports</option>
+          <option value="hockey">Ice Hockey</option>
+          <option value="soccer">Soccer (Heading)</option>
+          <option value="rugby">Rugby</option>
+          <option value="military">Military / Blast Exposure</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Years of RHI Exposure <span class="input-unit">(years)</span></label>
+        <input type="number" class="bm-input" id="tes-years" min="0" max="40" value="12" oninput="computeTES()">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Diagnosed Concussions <span class="input-unit">(count)</span></label>
+        <input type="number" class="bm-input" id="tes-concussions" min="0" max="50" value="3" oninput="computeTES()">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Current Age <span class="input-unit">(years)</span></label>
+        <input type="number" class="bm-input" id="tes-age" min="18" max="100" value="45" oninput="computeTES()">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Plasma GFAP <span class="input-unit">(pg/mL · ref &lt; 100)</span></label>
+        <input type="number" class="bm-input" id="tes-gfap" min="0" step="1" value="180" oninput="computeTES()">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Plasma p-tau181 <span class="input-unit">(pg/mL · ref &lt; 2.5)</span></label>
+        <input type="number" class="bm-input" id="tes-ptau" min="0" step="0.1" value="3.2" oninput="computeTES()">
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Cognitive Impairment Present?</label>
+        <select class="bm-select" id="tes-cognitive" onchange="computeTES()">
+          <option value="0">No</option>
+          <option value="1" selected>Mild</option>
+          <option value="2">Moderate</option>
+          <option value="3">Severe</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">Neurobehavioral Dysregulation?</label>
+        <select class="bm-select" id="tes-nbd" onchange="computeTES()">
+          <option value="0">Absent</option>
+          <option value="1" selected>Mild (irritability, mood lability)</option>
+          <option value="2">Moderate</option>
+          <option value="3">Severe (aggression, impulsivity)</option>
+        </select>
+      </div>
+
+      <div class="input-group">
+        <label class="input-label">APOE-ε4 Genotype</label>
+        <select class="bm-select" id="tes-apoe" onchange="computeTES()">
+          <option value="0">Non-carrier (ε3/ε3)</option>
+          <option value="1">Heterozygous (ε3/ε4)</option>
+          <option value="2">Homozygous (ε4/ε4)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="tes-card">
+      <h3>Composite TES Risk Score</h3>
+      <div class="risk-gauge-wrap">
+        <div class="risk-gauge">
+          <svg viewBox="0 0 240 140">
+            <defs>
+              <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#22c55e"/>
+                <stop offset="40%" stop-color="#f1c40f"/>
+                <stop offset="75%" stop-color="#f39c12"/>
+                <stop offset="100%" stop-color="#d946ef"/>
+              </linearGradient>
+            </defs>
+            <path d="M 20 120 A 100 100 0 0 1 220 120" stroke="rgba(255,255,255,0.06)" stroke-width="14" fill="none" stroke-linecap="round"/>
+            <path id="gauge-fill" d="M 20 120 A 100 100 0 0 1 220 120" stroke="url(#gauge-grad)" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="314 314" stroke-dashoffset="314" style="transition: stroke-dashoffset 0.8s cubic-bezier(.4,0,.2,1);"/>
+            <line id="gauge-needle" x1="120" y1="120" x2="120" y2="35" stroke="#9b7dff" stroke-width="2.5" stroke-linecap="round" style="transform-origin: 120px 120px; transform: rotate(-90deg); transition: transform 0.8s cubic-bezier(.4,0,.2,1); filter: drop-shadow(0 0 4px rgba(155,125,255,0.8));"/>
+            <circle cx="120" cy="120" r="6" fill="#221a44" stroke="#9b7dff" stroke-width="2"/>
+          </svg>
+        </div>
+        <div class="risk-readout">
+          <div class="risk-score" id="risk-score-num" style="color:var(--gold-bright);">--</div>
+          <div class="risk-label" id="risk-score-label" style="color:var(--gold-bright);">CALCULATING</div>
+        </div>
+        <div class="risk-detail" id="risk-detail">Adjust the inputs on the left to compute the composite TES risk score.</div>
+      </div>
+      <div style="display:flex;justify-content:center;margin-top:18px;">
+        <button class="generate-btn" id="tes-ai-btn" onclick="runTesAI()">
+          🤖 AI Clinical Recommendation
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="ai-panel fade-in">
+    <div class="ai-header">
+      <div class="ai-icon">🧠</div>
+      <div>
+        <div class="ai-title">NeuroSentinel TES Clinical Engine</div>
+        <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;">NINDS 2021 consensus criteria · Multimodal risk integration</div>
+      </div>
+    </div>
+    <div class="ai-response" id="tes-ai-response">
+      Click <strong>AI Clinical Recommendation</strong> to receive an individualized assessment integrating exposure history, biomarker pattern, and clinical features.
+    </div>
+    <div id="tes-ai-alert"></div>
+    <div class="timestamp" id="tes-ai-timestamp"></div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ ABOUT TAB -->
+<div id="tab-about" class="tab-content">
+  <div class="about-grid">
+    <div class="about-card">
+      <h3>NeuroSentinel™ Architecture</h3>
+      <div class="layer-item">
+        <div class="layer-num ln-1">01</div>
+        <div class="layer-text">
+          <h4>Plasma Sample Collection</h4>
+          <p>Standard EDTA venous blood draw (4 mL). Plasma separated within 2 hours, frozen at -80°C until assay.</p>
+        </div>
+      </div>
+      <div class="layer-item">
+        <div class="layer-num ln-2">02</div>
+        <div class="layer-text">
+          <h4>Simoa Single-Molecule Array</h4>
+          <p>Quanterix HD-X platform. Femtomolar sensitivity for p-tau217, p-tau181, NfL, GFAP, UCH-L1. Custom assay for p-tau202/396 ratio.</p>
+        </div>
+      </div>
+      <div class="layer-item">
+        <div class="layer-num ln-3">03</div>
+        <div class="layer-text">
+          <h4>NeuroSentinel ML Classifier</h4>
+          <p>Multi-marker XGBoost ensemble trained on UNITE consortium data (DIAGNOSE-CTE, NEwTON, BU-CTE Center). Outputs probabilistic CTE/AD/mixed/control classification.</p>
+        </div>
+      </div>
+      <div class="layer-item">
+        <div class="layer-num ln-4">04</div>
+        <div class="layer-text">
+          <h4>Claude AI Clinical Reasoning</h4>
+          <p>Integrates exposure history, NINDS 2021 TES criteria, and biomarker signatures to produce clinical decision-support narratives for the treating neurologist.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-card">
+      <h3>Assay Specifications</h3>
+      <div class="spec-row"><span class="spec-label">Sample volume</span><span class="spec-val">200 µL plasma</span></div>
+      <div class="spec-row"><span class="spec-label">Turnaround time</span><span class="spec-val">&lt; 4 hours</span></div>
+      <div class="spec-row"><span class="spec-label">p-tau217 LOD</span><span class="spec-val">0.012 pg/mL</span></div>
+      <div class="spec-row"><span class="spec-label">NfL LOD</span><span class="spec-val">0.4 pg/mL</span></div>
+      <div class="spec-row"><span class="spec-label">GFAP LOD</span><span class="spec-val">0.2 pg/mL</span></div>
+      <div class="spec-row"><span class="spec-label">Inter-assay CV</span><span class="spec-val">&lt; 9%</span></div>
+      <div class="spec-row"><span class="spec-label">Reportable range</span><span class="spec-val">3 logs</span></div>
+      <div class="spec-row"><span class="spec-label">Regulatory status</span><span class="spec-val">RUO · FDA 510(k) pending</span></div>
+      <div class="spec-row"><span class="spec-label">Clinical validation</span><span class="spec-val">N = 1,247 (UNITE)</span></div>
+
+      <h3 style="margin-top:24px;">Target Populations</h3>
+      <div class="layer-item">
+        <div class="layer-num ln-1">🏈</div>
+        <div class="layer-text"><h4>Contact-Sport Athletes</h4><p>Football, hockey, rugby, soccer (heading), wrestling — career screening & retirement counseling.</p></div>
+      </div>
+      <div class="layer-item">
+        <div class="layer-num ln-2">🥊</div>
+        <div class="layer-text"><h4>Combat Sports</h4><p>Boxing, MMA — Bernick et al. cohort showed 5–10× TES risk per added career fight.</p></div>
+      </div>
+      <div class="layer-item">
+        <div class="layer-num ln-3">🎖</div>
+        <div class="layer-text"><h4>Military Veterans</h4><p>Blast-exposure cohorts; differentiating PTSD-driven cognitive complaints from progressive RHI neurodegeneration.</p></div>
+      </div>
+      <div class="layer-item">
+        <div class="layer-num ln-4">⚕</div>
+        <div class="layer-text"><h4>Memory Clinic Differential</h4><p>Patients with RHI history and cognitive complaints — separate CTE-spectrum from AD, FTD, primary psychiatric mimics.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--bg-mid);border:1px solid var(--border);border-radius:12px;padding:24px;margin-top:24px;">
+    <h3 style="font-family:'Orbitron',monospace;font-size:12px;letter-spacing:3px;color:var(--violet-bright);margin-bottom:16px;text-transform:uppercase;">Key Scientific References</h3>
+    <div style="font-size:12px;line-height:1.8;color:var(--muted);">
+      • Asken BM et al. <em>Plasma p-tau181 and p-tau217 in Traumatic Encephalopathy Syndrome.</em> J Neurol Neurosurg Psychiatry, 2022.<br>
+      • Shahim P et al. <em>Serum GFAP and NfL longitudinally elevated in chronic TBI.</em> Neurology, 2020.<br>
+      • Bernick C et al. <em>Plasma biomarkers in active and retired combat athletes.</em> J Head Trauma Rehabil, 2021.<br>
+      • Kleven BDC, Bernick C et al. <em>TES diagnosis & GFAP elevation in professional combat athletes.</em> J Head Trauma Rehabil, 2025.<br>
+      • Katz DI, Bernick C, Dodick DW et al. <em>NINDS Consensus Diagnostic Criteria for TES.</em> Neurology, 2021.<br>
+      • McKee AC et al. <em>4R/3R tau isoform shifts across CTE stages.</em> Boston University CTE Center, 2024.<br>
+      • Veerhuis R et al. <em>Plasma & MRI biomarkers in former professional boxers.</em> Sci Rep, 2025.
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ═══════════════════════════════════════════════════════════════
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'differential') setTimeout(drawDifferentialChart, 50);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TAU PATHOLOGY DATA
+// ═══════════════════════════════════════════════════════════════
+const TAU_META = {
+  ptau217:  { label: 'p-tau217', desc: 'AD-specific phospho-tau · Threonine 217' },
+  ptau181:  { label: 'p-tau181', desc: 'TBI-sensitive phospho-tau · Threonine 181' },
+  ptauratio:{ label: 'p-tau202/396 ratio', desc: 'CTE-specific epitope signature' },
+  ttau:     { label: 'Total tau (t-tau)', desc: 'Global neuronal tau release' },
+};
+
+const TAU_SCENARIOS = {
+  healthy: {
+    ptau217:  { value: 0.18, unit:'pg/mL', ref:'< 0.40', status:'normal',   pct: 28 },
+    ptau181:  { value: 1.2,  unit:'pg/mL', ref:'< 2.5',  status:'normal',   pct: 24 },
+    ptauratio:{ value: 0.95, unit:'',      ref:'< 1.4',  status:'normal',   pct: 32 },
+    ttau:     { value: 1.8,  unit:'pg/mL', ref:'< 3.5',  status:'normal',   pct: 26 },
+  },
+  rhi_athlete: {
+    ptau217:  { value: 0.34, unit:'pg/mL', ref:'< 0.40', status:'normal',   pct: 52 },
+    ptau181:  { value: 2.8,  unit:'pg/mL', ref:'< 2.5',  status:'elevated', pct: 56 },
+    ptauratio:{ value: 1.32, unit:'',      ref:'< 1.4',  status:'elevated', pct: 64 },
+    ttau:     { value: 3.1,  unit:'pg/mL', ref:'< 3.5',  status:'normal',   pct: 48 },
+  },
+  tes_suspected: {
+    ptau217:  { value: 0.48, unit:'pg/mL', ref:'< 0.40', status:'elevated', pct: 68 },
+    ptau181:  { value: 4.2,  unit:'pg/mL', ref:'< 2.5',  status:'elevated', pct: 72 },
+    ptauratio:{ value: 1.78, unit:'',      ref:'< 1.4',  status:'critical', pct: 82 },
+    ttau:     { value: 4.6,  unit:'pg/mL', ref:'< 3.5',  status:'elevated', pct: 70 },
+  },
+  tes_advanced: {
+    ptau217:  { value: 0.61, unit:'pg/mL', ref:'< 0.40', status:'critical', pct: 86 },
+    ptau181:  { value: 6.8,  unit:'pg/mL', ref:'< 2.5',  status:'critical', pct: 91 },
+    ptauratio:{ value: 2.34, unit:'',      ref:'< 1.4',  status:'critical', pct: 95 },
+    ttau:     { value: 7.2,  unit:'pg/mL', ref:'< 3.5',  status:'critical', pct: 93 },
+  },
+  ad_mimic: {
+    ptau217:  { value: 0.92, unit:'pg/mL', ref:'< 0.40', status:'critical', pct: 96 },
+    ptau181:  { value: 4.1,  unit:'pg/mL', ref:'< 2.5',  status:'elevated', pct: 70 },
+    ptauratio:{ value: 0.88, unit:'',      ref:'< 1.4',  status:'normal',   pct: 30 },
+    ttau:     { value: 5.4,  unit:'pg/mL', ref:'< 3.5',  status:'elevated', pct: 78 },
+  },
+};
+
+// NEURO-GLIAL DATA
+const NG_META = {
+  nfl:    { label: 'NfL', desc: 'Neurofilament light · Axonal injury marker' },
+  gfap:   { label: 'GFAP', desc: 'Glial fibrillary acidic protein · Astrogliosis' },
+  uchl1:  { label: 'UCH-L1', desc: 'Ubiquitin C-term hydrolase L1 · Neuronal injury' },
+  s100b:  { label: 'S100B', desc: 'Astrocyte / blood-brain barrier integrity' },
+};
+
+const NG_SCENARIOS = {
+  healthy: {
+    nfl:   { value: 8.2,  unit:'pg/mL', ref:'< 15',  status:'normal',   pct: 28 },
+    gfap:  { value: 72,   unit:'pg/mL', ref:'< 100', status:'normal',   pct: 32 },
+    uchl1: { value: 0.18, unit:'ng/mL', ref:'< 0.40',status:'normal',   pct: 30 },
+    s100b: { value: 0.06, unit:'µg/L',  ref:'< 0.10',status:'normal',   pct: 36 },
+  },
+  acute_concussion: {
+    nfl:   { value: 22,   unit:'pg/mL', ref:'< 15',  status:'elevated', pct: 58 },
+    gfap:  { value: 240,  unit:'pg/mL', ref:'< 100', status:'critical', pct: 76 },
+    uchl1: { value: 0.62, unit:'ng/mL', ref:'< 0.40',status:'elevated', pct: 64 },
+    s100b: { value: 0.18, unit:'µg/L',  ref:'< 0.10',status:'elevated', pct: 60 },
+  },
+  subacute: {
+    nfl:   { value: 16.4, unit:'pg/mL', ref:'< 15',  status:'elevated', pct: 50 },
+    gfap:  { value: 145,  unit:'pg/mL', ref:'< 100', status:'elevated', pct: 56 },
+    uchl1: { value: 0.34, unit:'ng/mL', ref:'< 0.40',status:'normal',   pct: 44 },
+    s100b: { value: 0.09, unit:'µg/L',  ref:'< 0.10',status:'normal',   pct: 42 },
+  },
+  chronic_inflammation: {
+    nfl:   { value: 28,   unit:'pg/mL', ref:'< 15',  status:'critical', pct: 72 },
+    gfap:  { value: 312,  unit:'pg/mL', ref:'< 100', status:'critical', pct: 84 },
+    uchl1: { value: 0.42, unit:'ng/mL', ref:'< 0.40',status:'elevated', pct: 56 },
+    s100b: { value: 0.13, unit:'µg/L',  ref:'< 0.10',status:'elevated', pct: 58 },
+  },
+  progressive_degen: {
+    nfl:   { value: 42,   unit:'pg/mL', ref:'< 15',  status:'critical', pct: 91 },
+    gfap:  { value: 425,  unit:'pg/mL', ref:'< 100', status:'critical', pct: 94 },
+    uchl1: { value: 0.78, unit:'ng/mL', ref:'< 0.40',status:'critical', pct: 86 },
+    s100b: { value: 0.21, unit:'µg/L',  ref:'< 0.10',status:'critical', pct: 88 },
+  },
+};
+
+// DIFFERENTIAL DATA
+const DIFF_META = {
+  ptau217: { label:'p-tau217', desc:'AD ↑↑ · CTE mild ↑' },
+  ab42_40: { label:'Aβ42/40 ratio', desc:'AD ↓↓ · CTE preserved' },
+  ptauratio:{ label:'p-tau202/396', desc:'CTE ↑↑ · AD ↓' },
+  nfl:     { label:'NfL', desc:'Both ↑ · Non-specific' },
+};
+
+const DIFF_PROFILES = {
+  control: {
+    ptau217:  { value: 0.18, unit:'pg/mL', ref:'< 0.40', status:'normal', pct: 28 },
+    ab42_40:  { value: 0.092,unit:'ratio', ref:'> 0.06', status:'normal', pct: 75 },
+    ptauratio:{ value: 0.95, unit:'',      ref:'< 1.4',  status:'normal', pct: 32 },
+    nfl:      { value: 8.5,  unit:'pg/mL', ref:'< 15',   status:'normal', pct: 30 },
+  },
+  cte: {
+    ptau217:  { value: 0.42, unit:'pg/mL', ref:'< 0.40', status:'elevated', pct: 56 },
+    ab42_40:  { value: 0.085,unit:'ratio', ref:'> 0.06', status:'normal',   pct: 68 },
+    ptauratio:{ value: 1.95, unit:'',      ref:'< 1.4',  status:'critical', pct: 88 },
+    nfl:      { value: 24,   unit:'pg/mL', ref:'< 15',   status:'critical', pct: 70 },
+  },
+  ad: {
+    ptau217:  { value: 0.94, unit:'pg/mL', ref:'< 0.40', status:'critical', pct: 95 },
+    ab42_40:  { value: 0.048,unit:'ratio', ref:'> 0.06', status:'critical', pct: 22 },
+    ptauratio:{ value: 0.78, unit:'',      ref:'< 1.4',  status:'normal',   pct: 28 },
+    nfl:      { value: 19,   unit:'pg/mL', ref:'< 15',   status:'elevated', pct: 56 },
+  },
+  mixed: {
+    ptau217:  { value: 0.68, unit:'pg/mL', ref:'< 0.40', status:'critical', pct: 78 },
+    ab42_40:  { value: 0.058,unit:'ratio', ref:'> 0.06', status:'elevated', pct: 38 },
+    ptauratio:{ value: 1.62, unit:'',      ref:'< 1.4',  status:'critical', pct: 82 },
+    nfl:      { value: 31,   unit:'pg/mL', ref:'< 15',   status:'critical', pct: 80 },
+  },
+};
+
+// ═══════════════════════════════════════════════════════════════
+// CARD RENDERER
+// ═══════════════════════════════════════════════════════════════
+let sparkData = {};
+
+function bmCard(key, d, meta) {
+  const badgeCls = d.status === 'normal' ? 'badge-normal' : d.status === 'elevated' ? 'badge-elevated' : 'badge-critical';
+  const badgeTxt = d.status === 'normal' ? 'NORMAL' : d.status === 'elevated' ? 'ELEVATED' : '⚠ CRITICAL';
+  const fillCls = d.status === 'normal' ? 'fill-normal' : d.status === 'elevated' ? 'fill-elevated' : 'fill-critical';
+  const valueColor = d.status === 'normal' ? 'var(--green-bright)' : d.status === 'elevated' ? 'var(--gold-bright)' : 'var(--magenta-bright)';
+  return `
+    <div class="bm-card ${d.status} fade-in">
+      <div class="bm-header">
+        <div>
+          <div class="bm-name">${meta.label}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px;">${meta.desc}</div>
+        </div>
+        <div class="bm-badge ${badgeCls}">${badgeTxt}</div>
+      </div>
+      <div class="bm-value-row">
+        <div class="bm-value" style="color:${valueColor}">${d.value}</div>
+        <div class="bm-unit">${d.unit}</div>
+      </div>
+      <div class="bm-range">Reference: ${d.ref} ${d.unit}</div>
+      <div class="bm-bar-track"><div class="bm-bar-fill ${fillCls}" style="width:${d.pct}%"></div></div>
+      <div class="bm-sparkline"><canvas id="spark-${key}" height="40"></canvas></div>
+    </div>`;
+}
+
+function drawSparkline(canvasId, status, pct) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  canvas.width = canvas.offsetWidth || 240;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = 40;
+  if (!sparkData[canvasId]) sparkData[canvasId] = Array.from({length:20}, () => Math.random() * 0.3 + 0.35);
+  sparkData[canvasId].push(pct / 100 + (Math.random() - 0.5) * 0.06);
+  if (sparkData[canvasId].length > 20) sparkData[canvasId].shift();
+  ctx.clearRect(0, 0, w, h);
+  const pts = sparkData[canvasId];
+  const color = status === 'normal' ? '#4ade80' : status === 'elevated' ? '#f1c40f' : '#ec79ff';
+  ctx.beginPath();
+  ctx.moveTo(0, h - pts[0] * h);
+  for (let i = 1; i < pts.length; i++) {
+    ctx.lineTo((i / (pts.length - 1)) * w, h - Math.max(0.05, Math.min(0.95, pts[i])) * h);
+  }
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.6;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 4;
+  ctx.stroke();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TAU TAB
+// ═══════════════════════════════════════════════════════════════
+let currentTauScenario = 'healthy';
+
+function renderTau() {
+  const s = TAU_SCENARIOS[currentTauScenario];
+  document.getElementById('tau-grid').innerHTML =
+    Object.entries(s).map(([k,d]) => bmCard(k, d, TAU_META[k])).join('');
+  setTimeout(() => Object.entries(s).forEach(([k,d]) => drawSparkline('spark-' + k, d.status, d.pct)), 50);
+}
+
+function setTauScenario(name, btn) {
+  currentTauScenario = name;
+  sparkData = {};
+  document.querySelectorAll('#tab-tau .scenario-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tau-ai-response').textContent = 'Click "AI Tau Pathology Analysis" to interpret the current phospho-tau pattern.';
+  document.getElementById('tau-ai-alert').innerHTML = '';
+  document.getElementById('tau-ai-timestamp').textContent = '';
+  ['ptau217','ptau181','ptauratio','ttau'].forEach(k => {
+    const el = document.getElementById('inp-' + k);
+    if (el) el.value = '';
+  });
+  renderTau();
+}
+
+function applyManualTau() {
+  const fields = {
+    ptau217:   { unit:'pg/mL', ref:'< 0.40', thresholds:[0.40, 0.60] },
+    ptau181:   { unit:'pg/mL', ref:'< 2.5',  thresholds:[2.5,  4.5]  },
+    ptauratio: { unit:'',      ref:'< 1.4',  thresholds:[1.4,  1.8]  },
+    ttau:      { unit:'pg/mL', ref:'< 3.5',  thresholds:[3.5,  5.5]  },
+  };
+  let hasInput = false;
+  const custom = JSON.parse(JSON.stringify(TAU_SCENARIOS.healthy));
+  for (const [key, cfg] of Object.entries(fields)) {
+    const el = document.getElementById('inp-' + key);
+    const val = parseFloat(el.value);
+    if (!isNaN(val) && el.value !== '') {
+      hasInput = true;
+      const maxVal = cfg.thresholds[1] * 2.5;
+      const pct = Math.min(99, Math.round((val / maxVal) * 100));
+      const status = val <= cfg.thresholds[0] ? 'normal' : val <= cfg.thresholds[1] ? 'elevated' : 'critical';
+      custom[key] = { value: val, unit: cfg.unit, ref: cfg.ref, status, pct };
+    }
+  }
+  if (!hasInput) { alert('Please enter at least one biomarker value.'); return; }
+  TAU_SCENARIOS['custom'] = custom;
+  currentTauScenario = 'custom';
+  sparkData = {};
+  document.querySelectorAll('#tab-tau .scenario-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tau-ai-response').textContent = 'Custom values applied. Click "AI Tau Pathology Analysis" to interpret.';
+  document.getElementById('tau-ai-alert').innerHTML = '';
+  renderTau();
+}
+
+function clearManualTau() {
+  ['ptau217','ptau181','ptauratio','ttau'].forEach(k => {
+    const el = document.getElementById('inp-' + k);
+    if (el) el.value = '';
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// NEURO-GLIAL TAB
+// ═══════════════════════════════════════════════════════════════
+let currentNgScenario = 'healthy';
+
+function renderNg() {
+  const s = NG_SCENARIOS[currentNgScenario];
+  document.getElementById('ng-grid').innerHTML =
+    Object.entries(s).map(([k,d]) => bmCard(k, d, NG_META[k])).join('');
+  setTimeout(() => Object.entries(s).forEach(([k,d]) => drawSparkline('spark-' + k, d.status, d.pct)), 50);
+}
+
+function setNgScenario(name, btn) {
+  currentNgScenario = name;
+  sparkData = {};
+  document.querySelectorAll('#tab-neuroglial .scenario-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('ng-ai-response').textContent = 'Click "AI Neuro-Glial Analysis" for an integrated neurodegenerative assessment.';
+  document.getElementById('ng-ai-alert').innerHTML = '';
+  document.getElementById('ng-ai-timestamp').textContent = '';
+  renderNg();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DIFFERENTIAL TAB
+// ═══════════════════════════════════════════════════════════════
+let currentDiffProfile = 'control';
+
+function renderDiff() {
+  const s = DIFF_PROFILES[currentDiffProfile];
+  document.getElementById('diff-grid').innerHTML =
+    Object.entries(s).map(([k,d]) => bmCard(k, d, DIFF_META[k])).join('');
+  setTimeout(() => Object.entries(s).forEach(([k,d]) => drawSparkline('spark-' + k, d.status, d.pct)), 50);
+  drawDifferentialChart();
+}
+
+function setDiffProfile(name, btn) {
+  currentDiffProfile = name;
+  sparkData = {};
+  document.querySelectorAll('#tab-differential .scenario-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('diff-ai-response').textContent = 'Click "AI Differential Diagnosis" to classify across CTE / AD / mixed pathology.';
+  document.getElementById('diff-ai-alert').innerHTML = '';
+  document.getElementById('diff-ai-timestamp').textContent = '';
+  renderDiff();
+}
+
+// 2D scatter plot: x = p-tau217, y = p-tau202/396 ratio
+function drawDifferentialChart() {
+  const canvas = document.getElementById('diff-canvas');
+  if (!canvas) return;
+  canvas.width = canvas.offsetWidth;
+  canvas.height = 340;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  // Margins
+  const ml = 70, mr = 30, mt = 30, mb = 50;
+  const pw = w - ml - mr, ph = h - mt - mb;
+
+  // X axis: p-tau217 (0 to 1.2)
+  // Y axis: p-tau202/396 ratio (0 to 2.6)
+  const xmax = 1.2, ymax = 2.6;
+  const xToPx = v => ml + (v / xmax) * pw;
+  const yToPx = v => mt + ph - (v / ymax) * ph;
+
+  // Grid
+  ctx.strokeStyle = 'rgba(155,125,255,0.08)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 6; i++) {
+    const x = ml + (i / 6) * pw;
+    ctx.beginPath(); ctx.moveTo(x, mt); ctx.lineTo(x, mt + ph); ctx.stroke();
+  }
+  for (let i = 0; i <= 5; i++) {
+    const y = mt + (i / 5) * ph;
+    ctx.beginPath(); ctx.moveTo(ml, y); ctx.lineTo(ml + pw, y); ctx.stroke();
+  }
+
+  // Region shading: AD high p-tau217, low ratio (bottom right)
+  ctx.fillStyle = 'rgba(26,214,214,0.07)';
+  ctx.fillRect(xToPx(0.5), yToPx(1.4), xToPx(xmax)-xToPx(0.5), yToPx(0)-yToPx(1.4));
+  // CTE region: low-mid p-tau217, high ratio (top left)
+  ctx.fillStyle = 'rgba(217,70,239,0.08)';
+  ctx.fillRect(xToPx(0), yToPx(ymax), xToPx(0.6)-xToPx(0), yToPx(1.4)-yToPx(ymax));
+  // Mixed region: high both (top right)
+  ctx.fillStyle = 'rgba(243,156,18,0.06)';
+  ctx.fillRect(xToPx(0.5), yToPx(ymax), xToPx(xmax)-xToPx(0.5), yToPx(1.4)-yToPx(ymax));
+  // Control: low both (bottom left)
+  ctx.fillStyle = 'rgba(34,197,94,0.06)';
+  ctx.fillRect(xToPx(0), yToPx(1.4), xToPx(0.5)-xToPx(0), yToPx(0)-yToPx(1.4));
+
+  // Region labels
+  ctx.font = "bold 11px 'Space Mono', monospace";
+  ctx.fillStyle = 'rgba(74,222,128,0.7)';   ctx.fillText('CONTROL',  ml+10, yToPx(0.3));
+  ctx.fillStyle = 'rgba(236,121,255,0.85)'; ctx.fillText('CTE',      ml+10, mt+18);
+  ctx.fillStyle = 'rgba(86,232,232,0.85)';  ctx.fillText('AD',       xToPx(0.95), yToPx(0.3));
+  ctx.fillStyle = 'rgba(241,196,15,0.85)';  ctx.fillText('MIXED',    xToPx(0.95), mt+18);
+
+  // Axes
+  ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(ml, mt); ctx.lineTo(ml, mt + ph); ctx.lineTo(ml + pw, mt + ph);
+  ctx.stroke();
+
+  // Axis labels
+  ctx.fillStyle = '#8e83b8';
+  ctx.font = "11px 'Space Mono', monospace";
+  ctx.textAlign = 'center';
+  ctx.fillText('plasma p-tau217 (pg/mL)', ml + pw/2, h - 14);
+  ctx.save();
+  ctx.translate(20, mt + ph/2);
+  ctx.rotate(-Math.PI/2);
+  ctx.fillText('p-tau202 / p-tau396 ratio', 0, 0);
+  ctx.restore();
+
+  // X tick labels
+  ctx.textAlign = 'center';
+  for (let i = 0; i <= 6; i++) {
+    const v = (i/6) * xmax;
+    ctx.fillText(v.toFixed(1), ml + (i/6)*pw, mt + ph + 16);
+  }
+  // Y tick labels
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= 5; i++) {
+    const v = ((5-i)/5) * ymax;
+    ctx.fillText(v.toFixed(1), ml - 8, mt + (i/5)*ph + 4);
+  }
+
+  // Plot all 4 profile points (active highlighted)
+  const profilePts = [
+    { name:'control', x: 0.18, y: 0.95, color:'#4ade80', label:'Control' },
+    { name:'cte',     x: 0.42, y: 1.95, color:'#ec79ff', label:'CTE' },
+    { name:'ad',      x: 0.94, y: 0.78, color:'#56e8e8', label:'AD' },
+    { name:'mixed',   x: 0.68, y: 1.62, color:'#f1c40f', label:'Mixed' },
+  ];
+
+  profilePts.forEach(p => {
+    const cx = xToPx(p.x), cy = yToPx(p.y);
+    const isActive = p.name === currentDiffProfile;
+    if (isActive) {
+      // Pulsing halo
+      ctx.beginPath();
+      ctx.arc(cx, cy, 18, 0, Math.PI*2);
+      ctx.fillStyle = p.color + '33';
+      ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.arc(cx, cy, isActive ? 8 : 5, 0, Math.PI*2);
+    ctx.fillStyle = p.color;
+    ctx.shadowColor = p.color;
+    ctx.shadowBlur = isActive ? 14 : 6;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    if (isActive) {
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = "bold 12px 'Rajdhani', sans-serif";
+      ctx.textAlign = 'left';
+      ctx.fillText('◀ ' + p.label.toUpperCase(), cx + 14, cy + 4);
+    }
+  });
+
+  // Decision boundary lines (subtle)
+  ctx.strokeStyle = 'rgba(155,125,255,0.25)';
+  ctx.setLineDash([4, 4]);
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(xToPx(0.5), mt); ctx.lineTo(xToPx(0.5), mt + ph);
+  ctx.moveTo(ml, yToPx(1.4)); ctx.lineTo(ml + pw, yToPx(1.4));
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TES RISK CALCULATOR
+// ═══════════════════════════════════════════════════════════════
+function computeTES() {
+  const sport = document.getElementById('tes-sport').value;
+  const years = +document.getElementById('tes-years').value;
+  const concussions = +document.getElementById('tes-concussions').value;
+  const age = +document.getElementById('tes-age').value;
+  const gfap = +document.getElementById('tes-gfap').value;
+  const ptau = +document.getElementById('tes-ptau').value;
+  const cog = +document.getElementById('tes-cognitive').value;
+  const nbd = +document.getElementById('tes-nbd').value;
+  const apoe = +document.getElementById('tes-apoe').value;
+
+  const sportWeight = { football:1.0, boxing:1.4, mma:1.3, hockey:0.9, soccer:0.6, rugby:1.0, military:1.1 }[sport] || 1.0;
+
+  // Component scores (each 0-100)
+  const exposureScore = Math.min(100,
+    sportWeight * (years * 2.0 + concussions * 4.5)
+  );
+  const biomarkerScore = Math.min(100,
+    Math.max(0, (gfap - 100) / 4) * 0.6 +
+    Math.max(0, (ptau - 2.5) / 0.06) * 0.4
+  );
+  const clinicalScore = Math.min(100, (cog * 14) + (nbd * 12));
+  const ageScore = age >= 50 ? Math.min(20, (age - 50) * 0.8) : 0;
+  const apoeBonus = apoe * 8;
+
+  const composite = Math.min(100, Math.round(
+    exposureScore * 0.30 +
+    biomarkerScore * 0.35 +
+    clinicalScore * 0.25 +
+    ageScore +
+    apoeBonus
+  ));
+
+  // Update gauge
+  const gaugeLen = 314;
+  const fillEl = document.getElementById('gauge-fill');
+  fillEl.style.strokeDashoffset = gaugeLen - (composite/100) * gaugeLen;
+
+  // Needle: -90deg (left) to +90deg (right)
+  const angle = -90 + (composite / 100) * 180;
+  document.getElementById('gauge-needle').style.transform = `rotate(${angle}deg)`;
+
+  // Score & label colors
+  let color, label, detail;
+  if (composite < 25) {
+    color = 'var(--green-bright)';
+    label = 'LOW';
+    detail = 'Low TES risk based on combined exposure, biomarker, and clinical inputs. Continue routine annual surveillance and head-impact mitigation strategies.';
+  } else if (composite < 55) {
+    color = 'var(--gold-bright)';
+    label = 'MODERATE';
+    detail = 'Moderate TES risk. Recommend repeat plasma biomarker panel in 6–12 months, baseline neuropsychological testing, and structured concussion follow-up.';
+  } else if (composite < 80) {
+    color = 'var(--gold-bright)';
+    label = 'HIGH';
+    detail = 'High TES risk. Refer to behavioral neurologist. Comprehensive workup: MRI with CTE-specific ROI volumetry, formal neuropsychological battery, longitudinal biomarker tracking every 6 months.';
+  } else {
+    color = 'var(--magenta-bright)';
+    label = 'VERY HIGH';
+    detail = 'Very high TES risk meeting NINDS 2021 probable TES criteria. Urgent multidisciplinary referral: behavioral neurology, neuropsychiatry, and consideration for participation in CTE biomarker registries (DIAGNOSE-CTE, UNITE).';
+  }
+
+  document.getElementById('risk-score-num').textContent = composite;
+  document.getElementById('risk-score-num').style.color = color;
+  document.getElementById('risk-score-label').textContent = label + ' RISK';
+  document.getElementById('risk-score-label').style.color = color;
+  document.getElementById('risk-detail').textContent = detail;
+
+  // Store for AI
+  window._tesState = { sport, years, concussions, age, gfap, ptau, cog, nbd, apoe, composite, label,
+                       exposureScore: Math.round(exposureScore), biomarkerScore: Math.round(biomarkerScore),
+                       clinicalScore: Math.round(clinicalScore) };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// AI ENDPOINTS
+// ═══════════════════════════════════════════════════════════════
+async function callClaude(systemPrompt, userPrompt) {
+  const response = await fetch('/api/chat', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      system: systemPrompt,
+      messages: [{ role:'user', content: userPrompt }]
+    })
+  });
+  const data = await response.json();
+  return data.content?.find(c => c.type === 'text')?.text || 'Analysis unavailable.';
+}
+
+async function typeText(el, text) {
+  el.textContent = '';
+  const words = text.split(' ');
+  for (let i = 0; i < words.length; i++) {
+    el.textContent += (i > 0 ? ' ' : '') + words[i];
+    if (i % 4 === 0) await new Promise(r => setTimeout(r, 18));
+  }
+}
+
+// ─── Tau AI ───────────────────────────────────────
+async function runTauAI() {
+  const btn = document.getElementById('tau-ai-btn');
+  const respEl = document.getElementById('tau-ai-response');
+  const alertEl = document.getElementById('tau-ai-alert');
+  const tsEl = document.getElementById('tau-ai-timestamp');
+
+  btn.disabled = true; btn.textContent = '⏳ Analyzing...';
+  respEl.className = 'ai-response loading'; respEl.textContent = '';
+  alertEl.innerHTML = '';
+
+  const s = TAU_SCENARIOS[currentTauScenario];
+  const prompts = {
+    healthy: 'All phospho-tau markers within healthy reference ranges, no evidence of tauopathy.',
+    rhi_athlete: 'Pattern consistent with repetitive head impact exposure: elevated p-tau181 and elevated p-tau202/396 ratio, but normal p-tau217 — suggesting CTE-spectrum biology rather than AD.',
+    tes_suspected: 'Pattern strongly suggestive of TES: elevated p-tau181 and significantly elevated p-tau202/396 ratio with mild p-tau217 elevation.',
+    tes_advanced: 'Severe phospho-tau pathology consistent with advanced TES / CTE-spectrum disease. Markedly elevated CTE-specific p-tau202/396 ratio.',
+    ad_mimic: 'Tauopathy pattern more consistent with Alzheimer\'s disease: high p-tau217 with low p-tau202/396 ratio. CTE-specific epitope signature is ABSENT.',
+    custom: 'Manually entered phospho-tau values.',
+  };
+
+  const sys = `You are the NeuroSentinel™ Tau Pathology Engine, an AI clinical decision support system for blood-based CTE / TES biomarker interpretation. You reason about phospho-tau epitope signatures, distinguishing CTE from AD using p-tau202/396 ratio (elevated in CTE) versus p-tau217 (elevated in AD). Be concise, clinically authoritative, and direct. Use medical terminology with brief context. Always remind that CTE is currently a postmortem diagnosis and these biomarkers stratify TES risk only — they do not confirm CTE in life. No markdown, no asterisks. Maximum 200 words across 2-3 short paragraphs.`;
+
+  const user = `NeuroSentinel™ Plasma Tau Panel — Patient PID TRU-NS-2026-0117:
+- p-tau217: ${s.ptau217.value} pg/mL (ref < 0.40)
+- p-tau181: ${s.ptau181.value} pg/mL (ref < 2.5)
+- p-tau202/p-tau396 ratio: ${s.ptauratio.value} (ref < 1.4 — CTE-specific marker)
+- Total tau: ${s.ttau.value} pg/mL (ref < 3.5)
+Clinical pattern: ${prompts[currentTauScenario] || 'Custom values'}
+
+Interpret the phospho-tau signature with focus on CTE vs AD epitope differentiation, and provide clinical guidance for the treating neurologist.`;
+
+  try {
+    const text = await callClaude(sys, user);
+    respEl.className = 'ai-response fade-in';
+    await typeText(respEl, text);
+
+    const alerts = {
+      healthy:       ['alert-ok',       '✅ NO TAUOPATHY DETECTED — Phospho-tau panel within healthy ranges. Routine surveillance.'],
+      rhi_athlete:   ['alert-warning',  '⚠ SUBCLINICAL CTE-SPECTRUM PATTERN — Elevated p-tau202/396 in absence of AD signature. Repeat in 6 months.'],
+      tes_suspected: ['alert-critical', '🚨 PROBABLE TES PATTERN — CTE-specific phospho-tau epitope signature. Behavioral neurology referral indicated.'],
+      tes_advanced:  ['alert-critical', '🚨 ADVANCED TES PATTERN — Severe CTE-specific tauopathy. Multidisciplinary neurodegenerative workup urgent.'],
+      ad_mimic:      ['alert-critical', '🚨 ALZHEIMER\'S-TYPE TAUOPATHY — High p-tau217, low p-tau202/396. Refer to memory clinic for AD workup.'],
+      custom:        ['alert-warning',  '⚠ CUSTOM INPUT — Review AI assessment and confirm clinically.'],
+    };
+    const [cls, msg] = alerts[currentTauScenario];
+    alertEl.innerHTML = `<div class="alert-box ${cls}">${msg}</div>`;
+    tsEl.textContent = `Analysis: ${new Date().toLocaleTimeString()} · NeuroSentinel Tau Engine v1.3 · For research and clinical decision support`;
+  } catch(e) {
+    respEl.className = 'ai-response';
+    respEl.textContent = 'AI analysis unavailable. ' + e.message;
+  }
+  btn.disabled = false; btn.innerHTML = '🤖 AI Tau Pathology Analysis';
+}
+
+// ─── Neuro-Glial AI ───────────────────────────────────────
+async function runNgAI() {
+  const btn = document.getElementById('ng-ai-btn');
+  const respEl = document.getElementById('ng-ai-response');
+  const alertEl = document.getElementById('ng-ai-alert');
+  const tsEl = document.getElementById('ng-ai-timestamp');
+
+  btn.disabled = true; btn.textContent = '⏳ Analyzing...';
+  respEl.className = 'ai-response loading'; respEl.textContent = '';
+  alertEl.innerHTML = '';
+
+  const s = NG_SCENARIOS[currentNgScenario];
+  const prompts = {
+    healthy: 'Resting-state neurological homeostasis',
+    acute_concussion: 'Acute traumatic brain injury within 72 hours — peak GFAP and UCH-L1 elevation',
+    subacute: 'Subacute repetitive head impact phase — declining acute markers, persisting glial response',
+    chronic_inflammation: 'Chronic neuroinflammation pattern with persistent astrogliosis (per Bernick et al., elevated GFAP correlates with TES risk)',
+    progressive_degen: 'Progressive neurodegeneration — sustained NfL elevation indicating ongoing axonal loss',
+  };
+
+  const sys = `You are the NeuroSentinel™ Neuro-Glial Engine. You interpret plasma NfL (axonal injury), GFAP (astrogliosis — per Kleven 2025 and Bernick 2021, strongly associated with TES), UCH-L1 (acute neuronal injury), and S100B (BBB integrity / astrocytes). Clinically authoritative, concise. Note CTE confirmation is postmortem only. No markdown, max 200 words, 2-3 paragraphs.`;
+
+  const user = `NeuroSentinel™ Neuro-Glial Panel — Patient PID TRU-NS-2026-0117:
+- NfL: ${s.nfl.value} pg/mL (ref < 15)
+- GFAP: ${s.gfap.value} pg/mL (ref < 100)
+- UCH-L1: ${s.uchl1.value} ng/mL (ref < 0.40)
+- S100B: ${s.s100b.value} µg/L (ref < 0.10)
+Clinical context: ${prompts[currentNgScenario]}.
+
+Provide an integrated interpretation distinguishing acute neuronal injury from chronic neuroinflammatory burden, with clinical implications for TES surveillance.`;
+
+  try {
+    const text = await callClaude(sys, user);
+    respEl.className = 'ai-response fade-in';
+    await typeText(respEl, text);
+
+    const alerts = {
+      healthy:              ['alert-ok',       '✅ NO ACTIVE INJURY OR INFLAMMATION'],
+      acute_concussion:     ['alert-warning',  '⚠ ACUTE TBI PATTERN — Recommend follow-up at 7 and 30 days; return-to-play protocol applies'],
+      subacute:             ['alert-warning',  '⚠ SUBACUTE INFLAMMATORY RESIDUUM — Continue serial monitoring'],
+      chronic_inflammation: ['alert-critical', '🚨 CHRONIC NEUROINFLAMMATION — Persistent astrogliosis raises TES odds (Bernick 2021)'],
+      progressive_degen:    ['alert-critical', '🚨 PROGRESSIVE NEURODEGENERATION — Urgent neurology consultation'],
+    };
+    const [cls, msg] = alerts[currentNgScenario];
+    alertEl.innerHTML = `<div class="alert-box ${cls}">${msg}</div>`;
+    tsEl.textContent = `Analysis: ${new Date().toLocaleTimeString()} · NeuroSentinel Neuro-Glial v1.3`;
+  } catch(e) {
+    respEl.textContent = 'Analysis unavailable. ' + e.message;
+  }
+  btn.disabled = false; btn.innerHTML = '🤖 AI Neuro-Glial Analysis';
+}
+
+// ─── Differential AI ───────────────────────────────────────
+async function runDiffAI() {
+  const btn = document.getElementById('diff-ai-btn');
+  const respEl = document.getElementById('diff-ai-response');
+  const alertEl = document.getElementById('diff-ai-alert');
+  const tsEl = document.getElementById('diff-ai-timestamp');
+
+  btn.disabled = true; btn.textContent = '⏳ Classifying...';
+  respEl.className = 'ai-response loading'; respEl.textContent = '';
+  alertEl.innerHTML = '';
+
+  const s = DIFF_PROFILES[currentDiffProfile];
+  const sys = `You are the NeuroSentinel™ Differential Diagnosis Engine, classifying neurodegenerative tauopathies using plasma biomarker signatures. Key principles: AD = high p-tau217 + low Aβ42/40 ratio + low p-tau202/396 ratio. CTE = mild p-tau217 + preserved Aβ42/40 + high p-tau202/396 ratio. Mixed pathology = elevations in all markers. Output a probabilistic classification (CTE %, AD %, Mixed %, Control %) and brief clinical reasoning. CTE confirmation remains postmortem. No markdown, max 220 words.`;
+
+  const user = `NeuroSentinel™ Differential Panel — Patient PID TRU-NS-2026-0117:
+- p-tau217: ${s.ptau217.value} pg/mL (ref < 0.40)
+- Aβ42/40 ratio: ${s.ab42_40.value} (ref > 0.06; AD < 0.06)
+- p-tau202/p-tau396 ratio: ${s.ptauratio.value} (ref < 1.4; CTE-specific)
+- NfL: ${s.nfl.value} pg/mL (ref < 15)
+
+Provide a probabilistic differential across CTE / AD / Mixed / Control with brief reasoning.`;
+
+  try {
+    const text = await callClaude(sys, user);
+    respEl.className = 'ai-response fade-in';
+    await typeText(respEl, text);
+
+    const alerts = {
+      control: ['alert-ok',       '✅ CONTROL PROFILE — No tauopathy signature'],
+      cte:     ['alert-critical', '🚨 CTE-PREDOMINANT PROFILE — Elevated CTE-specific p-tau202/396 with preserved Aβ42/40'],
+      ad:      ['alert-critical', '🚨 ALZHEIMER\'S PROFILE — High p-tau217 with reduced Aβ42/40, characteristic AD signature'],
+      mixed:   ['alert-critical', '🚨 MIXED PATHOLOGY — Both CTE-spectrum and AD signatures present'],
+    };
+    const [cls, msg] = alerts[currentDiffProfile];
+    alertEl.innerHTML = `<div class="alert-box ${cls}">${msg}</div>`;
+    tsEl.textContent = `Classification: ${new Date().toLocaleTimeString()} · NeuroSentinel Differential v1.3`;
+  } catch(e) {
+    respEl.textContent = 'Analysis unavailable. ' + e.message;
+  }
+  btn.disabled = false; btn.innerHTML = '🤖 AI Differential Diagnosis';
+}
+
+// ─── TES AI ───────────────────────────────────────
+async function runTesAI() {
+  const btn = document.getElementById('tes-ai-btn');
+  const respEl = document.getElementById('tes-ai-response');
+  const alertEl = document.getElementById('tes-ai-alert');
+  const tsEl = document.getElementById('tes-ai-timestamp');
+
+  btn.disabled = true; btn.textContent = '⏳ Analyzing...';
+  respEl.className = 'ai-response loading'; respEl.textContent = '';
+  alertEl.innerHTML = '';
+
+  const t = window._tesState || {};
+
+  const sys = `You are the NeuroSentinel™ TES Clinical Engine. You synthesize the 2021 NINDS Consensus Diagnostic Criteria for Traumatic Encephalopathy Syndrome (Katz, Bernick, Dodick et al.) with plasma biomarker results to produce individualized clinical recommendations. Reference key evidence: substantial RHI exposure threshold, core neurobehavioral features (cognitive impairment + neurobehavioral dysregulation), GFAP elevation strongly associated with TES (Kleven 2025), APOE-ε4 as a modifier. CTE itself remains a postmortem diagnosis — TES is the in-life clinical syndrome. Be concise, actionable, clinician-facing. No markdown, max 220 words across 2-3 paragraphs.`;
+
+  const user = `NeuroSentinel™ TES Risk Calculator Output — Patient PID TRU-NS-2026-0117:
+
+Exposure profile:
+- Sport: ${t.sport}
+- Years RHI exposure: ${t.years}
+- Diagnosed concussions: ${t.concussions}
+- Current age: ${t.age}
+
+Plasma biomarkers:
+- GFAP: ${t.gfap} pg/mL (ref < 100)
+- p-tau181: ${t.ptau} pg/mL (ref < 2.5)
+
+Clinical features:
+- Cognitive impairment: level ${t.cog}/3
+- Neurobehavioral dysregulation: level ${t.nbd}/3
+- APOE-ε4 dose: ${t.apoe}/2
+
+Composite TES risk score: ${t.composite}/100 (${t.label})
+Subscores — Exposure: ${t.exposureScore}, Biomarker: ${t.biomarkerScore}, Clinical: ${t.clinicalScore}
+
+Provide an individualized clinical recommendation: which diagnostic workup steps, biomarker recheck interval, specialty referrals, and patient counseling priorities.`;
+
+  try {
+    const text = await callClaude(sys, user);
+    respEl.className = 'ai-response fade-in';
+    await typeText(respEl, text);
+
+    let cls, msg;
+    if (t.composite < 25)      { cls='alert-ok';       msg='✅ LOW RISK — Routine annual surveillance'; }
+    else if (t.composite < 55) { cls='alert-warning';  msg='⚠ MODERATE RISK — 6–12 month biomarker recheck + neuropsych baseline'; }
+    else if (t.composite < 80) { cls='alert-warning';  msg='⚠ HIGH RISK — Behavioral neurology referral + MRI volumetry'; }
+    else                       { cls='alert-critical'; msg='🚨 VERY HIGH RISK — Probable TES per NINDS 2021; multidisciplinary workup urgent'; }
+    alertEl.innerHTML = `<div class="alert-box ${cls}">${msg}</div>`;
+    tsEl.textContent = `Recommendation: ${new Date().toLocaleTimeString()} · NeuroSentinel TES Engine v1.3 · NINDS 2021 criteria-aligned`;
+  } catch(e) {
+    respEl.textContent = 'Analysis unavailable. ' + e.message;
+  }
+  btn.disabled = false; btn.innerHTML = '🤖 AI Clinical Recommendation';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+renderTau();
+renderNg();
+renderDiff();
+computeTES();
+window.addEventListener('resize', () => {
+  if (document.getElementById('tab-differential').classList.contains('active')) drawDifferentialChart();
+});
+
+// PWA service worker registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((err) => console.warn('SW registration failed:', err));
+  });
+}
+</script>
+</body>
+</html>
