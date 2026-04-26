@@ -117,6 +117,25 @@
     font-family:'Space Mono',monospace; font-size:10px;
     color: var(--muted);
   }
+  .install-btn {
+    display:none;
+    align-items:center; gap:6px;
+    font-family:'Space Mono',monospace; font-size:10px; font-weight:700;
+    letter-spacing:1px; text-transform:uppercase;
+    color: var(--white);
+    background: linear-gradient(135deg, var(--violet) 0%, var(--magenta) 100%);
+    border: 1px solid var(--violet-bright);
+    padding: 6px 14px; border-radius:20px;
+    cursor:pointer;
+    box-shadow: 0 0 12px rgba(155,125,255,0.4);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .install-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 0 18px rgba(217,70,239,0.6);
+  }
+  .install-btn.visible { display: inline-flex; }
+  .install-btn::before { content:'⤓'; font-size:13px; }
 
   /* MAIN TABS */
   .main-tabs {
@@ -472,6 +491,7 @@
     </div>
   </div>
   <div class="status-bar">
+    <button id="install-btn" class="install-btn" type="button" title="Install NeuroSentinel as an app">Install App</button>
     <div class="status-pill">
       <div class="status-dot"></div>
       ASSAY READY
@@ -1626,6 +1646,45 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/sw.js').catch((err) => console.warn('SW registration failed:', err));
   });
 }
+
+// PWA install prompt — surface a visible button when the browser is ready.
+(() => {
+  const btn = document.getElementById('install-btn');
+  if (!btn) return;
+  let deferredPrompt = null;
+
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+
+  if (isStandalone) return;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    btn.classList.add('visible');
+  });
+
+  btn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      deferredPrompt = null;
+      if (outcome === 'accepted') btn.classList.remove('visible');
+    } else if (isIOS) {
+      alert('To install: tap the Share icon in Safari, then "Add to Home Screen".');
+    } else {
+      alert('Use your browser menu → Install app (or look for the install icon in the address bar).');
+    }
+  });
+
+  window.addEventListener('appinstalled', () => {
+    btn.classList.remove('visible');
+    deferredPrompt = null;
+  });
+
+  if (isIOS) btn.classList.add('visible');
+})();
 </script>
 </body>
 </html>
