@@ -270,6 +270,7 @@
   .ai-response {
     font-size:15px; line-height:1.7; color:var(--white);
     min-height:80px;
+    white-space: pre-wrap;
   }
   .ai-response.loading::after {
     content:''; display:inline-block;
@@ -1405,7 +1406,27 @@ async function runTauAI() {
     custom: 'Manually entered phospho-tau values.',
   };
 
-  const sys = `You are the NeuroSentinel™ Tau Pathology Engine, an AI clinical decision support system for blood-based CTE / TES biomarker interpretation. You reason about phospho-tau epitope signatures, distinguishing CTE from AD using p-tau202/396 ratio (elevated in CTE) versus p-tau217 (elevated in AD). Be concise, clinically authoritative, and direct. Use medical terminology with brief context. Always remind that CTE is currently a postmortem diagnosis and these biomarkers stratify TES risk only — they do not confirm CTE in life. No markdown, no asterisks. Maximum 200 words across 2-3 short paragraphs.`;
+  const sys = `You are the NeuroSentinel™ Tau Pathology Engine, an AI clinical decision support system for blood-based CTE / TES biomarker interpretation. You reason about phospho-tau epitope signatures, distinguishing CTE from AD using p-tau202/396 ratio (elevated in CTE) versus p-tau217 (elevated in AD). Be concise, clinically authoritative, and direct. Use medical terminology with brief context. Always remind that CTE is currently a postmortem diagnosis and these biomarkers stratify TES risk only — they do not confirm CTE in life.
+
+FORMAT — STRICT:
+Return exactly four sections with these headers, each on its own line. Under each header, output 2–4 bullets, one per line, each bullet starting with "• " (bullet + space). One sentence per bullet. No paragraphs. No asterisks. No markdown. Separate each section with a blank line.
+
+EPITOPE PATTERN
+• <bullet>
+• <bullet>
+
+CLINICAL INTERPRETATION
+• <bullet>
+• <bullet>
+
+RECOMMENDED NEXT STEPS
+• <bullet>
+• <bullet>
+
+CAVEAT
+• <bullet>
+
+Total length under 220 words.`;
 
   const user = `NeuroSentinel™ Plasma Tau Panel — Patient PID TRU-NS-2026-0117:
 - p-tau217: ${s.ptau217.value} pg/mL (ref < 0.40)
