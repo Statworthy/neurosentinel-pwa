@@ -350,6 +350,30 @@
   }
   .bm-input:focus, .bm-select:focus { border-color:var(--violet-bright); box-shadow:0 0 0 2px rgba(155,125,255,0.15); }
   .bm-input::placeholder { color:rgba(142,131,184,0.5); }
+  .bm-select {
+    appearance:none; -webkit-appearance:none;
+    padding-right: 32px;
+    background-image: linear-gradient(45deg, transparent 50%, var(--violet-bright) 50%),
+                      linear-gradient(135deg, var(--violet-bright) 50%, transparent 50%);
+    background-position: calc(100% - 16px) 50%, calc(100% - 11px) 50%;
+    background-size: 5px 5px, 5px 5px;
+    background-repeat: no-repeat;
+  }
+  .bm-select option {
+    background: #14102a;
+    color: #ece8ff;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    padding: 8px;
+  }
+  .bm-select option:checked {
+    background: #6d4aff;
+    color: #ffffff;
+    font-weight: 700;
+  }
+  .bm-select option:disabled {
+    color: #8e83b8;
+  }
 
   /* Risk gauge */
   .risk-gauge-wrap {
