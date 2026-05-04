@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#6d4aff">
+<meta name="theme-color" content="#C8911C">
 <meta name="description" content="NeuroSentinel — AI blood-based CTE / TES diagnostic decision support.">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
@@ -12,25 +12,26 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Rajdhani:wght@300;400;500;600;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #0a0612;
-    --bg-mid: #14102a;
-    --bg-light: #221a44;
-    --violet: #6d4aff;
-    --violet-bright: #9b7dff;
-    --cyan: #1ad6d6;
-    --cyan-bright: #56e8e8;
-    --magenta: #d946ef;
-    --magenta-bright: #ec79ff;
-    --red: #c0392b;
-    --red-bright: #ff5252;
-    --gold: #f39c12;
-    --gold-bright: #f1c40f;
-    --green: #22c55e;
-    --green-bright: #4ade80;
-    --white: #ece8ff;
-    --muted: #8e83b8;
-    --border: rgba(155,125,255,0.18);
-    --glow: rgba(155,125,255,0.3);
+    /* Palette derived from NeuroSentinel/SalivaSense pitch deck */
+    --bg: #101820;
+    --bg-mid: #1A2028;
+    --bg-light: #3A434B;
+    --violet: #C8911C;        /* primary brand (bronze gold) */
+    --violet-bright: #FFB612; /* primary brand bright (gold) */
+    --cyan: #BFB088;          /* secondary accent (tan) */
+    --cyan-bright: #E0D5BC;   /* secondary accent bright (cream) */
+    --magenta: #C60C30;       /* critical alert (deep red) */
+    --magenta-bright: #E04B5E;/* critical alert bright */
+    --red: #C60C30;
+    --red-bright: #E04B5E;
+    --gold: #C8911C;
+    --gold-bright: #FFB612;
+    --green: #6B9B5E;
+    --green-bright: #8FBF7E;
+    --white: #FBF7F0;
+    --muted: #8A92A0;
+    --border: rgba(255,182,18,0.18);
+    --glow: rgba(255,182,18,0.3);
   }
   * { margin:0; padding:0; box-sizing:border-box; }
   body {
@@ -46,10 +47,10 @@
     content:'';
     position:fixed; inset:0;
     background:
-      radial-gradient(ellipse at 20% 0%, rgba(109,74,255,0.08), transparent 50%),
-      radial-gradient(ellipse at 80% 100%, rgba(217,70,239,0.06), transparent 50%),
-      linear-gradient(rgba(155,125,255,0.025) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(155,125,255,0.025) 1px, transparent 1px);
+      radial-gradient(ellipse at 20% 0%, rgba(200,145,28,0.08), transparent 50%),
+      radial-gradient(ellipse at 80% 100%, rgba(198,12,48,0.06), transparent 50%),
+      linear-gradient(rgba(255,182,18,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,182,18,0.025) 1px, transparent 1px);
     background-size: auto, auto, 44px 44px, 44px 44px;
     pointer-events:none; z-index:0;
   }
@@ -57,7 +58,7 @@
   /* HEADER */
   header {
     position: sticky; top:0; z-index:100;
-    background: rgba(10,6,18,0.95);
+    background: rgba(16,24,32,0.95);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     padding: 0 32px;
@@ -74,12 +75,12 @@
   }
   .logo-brain svg {
     width:100%; height:100%;
-    filter: drop-shadow(0 0 6px rgba(155,125,255,0.6));
+    filter: drop-shadow(0 0 6px rgba(255,182,18,0.6));
     animation: brain-pulse 2.4s ease-in-out infinite;
   }
   @keyframes brain-pulse {
-    0%,100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(155,125,255,0.6)); }
-    50% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(217,70,239,0.8)); }
+    0%,100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(255,182,18,0.6)); }
+    50% { transform: scale(1.08); filter: drop-shadow(0 0 12px rgba(198,12,48,0.8)); }
   }
   .logo-text {
     font-family:'Orbitron',monospace;
@@ -100,8 +101,8 @@
     display:flex; align-items:center; gap:6px;
     font-family:'Space Mono',monospace; font-size:10px;
     color: var(--cyan-bright);
-    background: rgba(26,214,214,0.08);
-    border: 1px solid rgba(26,214,214,0.25);
+    background: rgba(191,176,136,0.08);
+    border: 1px solid rgba(191,176,136,0.25);
     padding: 4px 12px; border-radius:20px;
   }
   .status-dot {
@@ -127,12 +128,12 @@
     border: 1px solid var(--violet-bright);
     padding: 6px 14px; border-radius:20px;
     cursor:pointer;
-    box-shadow: 0 0 12px rgba(155,125,255,0.4);
+    box-shadow: 0 0 12px rgba(255,182,18,0.4);
     transition: transform 0.15s, box-shadow 0.15s;
   }
   .install-btn:hover {
     transform: translateY(-1px);
-    box-shadow: 0 0 18px rgba(217,70,239,0.6);
+    box-shadow: 0 0 18px rgba(198,12,48,0.6);
   }
   .install-btn.visible { display: inline-flex; }
   .install-btn::before { content:'⤓'; font-size:13px; }
@@ -161,7 +162,7 @@
   .tab-btn.active {
     color: var(--violet-bright);
     border-bottom-color: var(--violet-bright);
-    background: rgba(109,74,255,0.07);
+    background: rgba(200,145,28,0.07);
   }
   .tab-icon { font-size:16px; }
 
@@ -189,9 +190,9 @@
   .bm-card.elevated::before { background: var(--gold); }
   .bm-card.critical::before { background: var(--magenta); animation: flash-mag 0.8s ease-in-out infinite alternate; }
   @keyframes flash-mag { from{opacity:1;}to{opacity:0.35;} }
-  .bm-card.normal { border-color: rgba(34,197,94,0.3); }
-  .bm-card.elevated { border-color: rgba(243,156,18,0.35); }
-  .bm-card.critical { border-color: rgba(217,70,239,0.5); box-shadow:0 0 22px rgba(217,70,239,0.15); }
+  .bm-card.normal { border-color: rgba(107,155,94,0.3); }
+  .bm-card.elevated { border-color: rgba(200,145,28,0.35); }
+  .bm-card.critical { border-color: rgba(198,12,48,0.5); box-shadow:0 0 22px rgba(198,12,48,0.15); }
 
   .bm-header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:14px; gap:10px; }
   .bm-name { font-size:17px; font-weight:700; letter-spacing:0.5px; }
@@ -200,9 +201,9 @@
     padding:3px 8px; border-radius:4px; letter-spacing:1px;
     flex-shrink:0;
   }
-  .badge-normal { background:rgba(34,197,94,0.2); color:var(--green-bright); border:1px solid rgba(34,197,94,0.4); }
-  .badge-elevated { background:rgba(243,156,18,0.2); color:var(--gold-bright); border:1px solid rgba(243,156,18,0.4); }
-  .badge-critical { background:rgba(217,70,239,0.2); color:var(--magenta-bright); border:1px solid rgba(217,70,239,0.5); }
+  .badge-normal { background:rgba(107,155,94,0.2); color:var(--green-bright); border:1px solid rgba(107,155,94,0.4); }
+  .badge-elevated { background:rgba(200,145,28,0.2); color:var(--gold-bright); border:1px solid rgba(200,145,28,0.4); }
+  .badge-critical { background:rgba(198,12,48,0.2); color:var(--magenta-bright); border:1px solid rgba(198,12,48,0.5); }
 
   .bm-value-row { display:flex; align-items:baseline; gap:6px; margin-bottom:8px; }
   .bm-value { font-family:'Orbitron',monospace; font-size:32px; font-weight:700; line-height:1; }
@@ -217,9 +218,9 @@
     height:100%; border-radius:3px;
     transition: width 0.8s cubic-bezier(.4,0,.2,1);
   }
-  .fill-normal { background: linear-gradient(90deg, #22c55e, #4ade80); }
-  .fill-elevated { background: linear-gradient(90deg, #f39c12, #f1c40f); }
-  .fill-critical { background: linear-gradient(90deg, #d946ef, #ec79ff); animation: shimmer-fill 1s ease-in-out infinite alternate; }
+  .fill-normal { background: linear-gradient(90deg, #6B9B5E, #8FBF7E); }
+  .fill-elevated { background: linear-gradient(90deg, #C8911C, #FFB612); }
+  .fill-critical { background: linear-gradient(90deg, #C60C30, #E04B5E); animation: shimmer-fill 1s ease-in-out infinite alternate; }
   @keyframes shimmer-fill { to{filter:brightness(1.45);} }
 
   .bm-sparkline { margin-top:10px; height:40px; }
@@ -247,10 +248,10 @@
     letter-spacing:0.5px;
     transition: all 0.2s;
   }
-  .scenario-btn:hover { background:rgba(155,125,255,0.12); border-color:var(--violet); color:var(--violet-bright); }
-  .scenario-btn.active { background:rgba(155,125,255,0.18); border-color:var(--violet-bright); color:var(--violet-bright); }
-  .scenario-btn.danger { border-color:rgba(217,70,239,0.4); color:var(--magenta-bright); }
-  .scenario-btn.danger.active { background:rgba(217,70,239,0.18); border-color:var(--magenta); color:var(--magenta-bright); }
+  .scenario-btn:hover { background:rgba(255,182,18,0.12); border-color:var(--violet); color:var(--violet-bright); }
+  .scenario-btn.active { background:rgba(255,182,18,0.18); border-color:var(--violet-bright); color:var(--violet-bright); }
+  .scenario-btn.danger { border-color:rgba(198,12,48,0.4); color:var(--magenta-bright); }
+  .scenario-btn.danger.active { background:rgba(198,12,48,0.18); border-color:var(--magenta); color:var(--magenta-bright); }
 
   /* Section title */
   .section-title {
@@ -264,14 +265,14 @@
   /* AI Panel */
   .ai-panel {
     background: var(--bg-mid);
-    border: 1px solid rgba(155,125,255,0.3);
+    border: 1px solid rgba(255,182,18,0.3);
     border-radius:12px; padding:24px;
     position:relative; overflow:hidden;
   }
   .ai-panel::before {
     content:''; position:absolute; top:0; right:0;
     width:240px; height:240px;
-    background: radial-gradient(circle, rgba(155,125,255,0.1), transparent 70%);
+    background: radial-gradient(circle, rgba(255,182,18,0.1), transparent 70%);
     pointer-events:none;
   }
   .ai-header {
@@ -283,7 +284,7 @@
     border:1px solid var(--violet-bright);
     display:flex; align-items:center; justify-content:center;
     font-size:16px;
-    box-shadow: 0 0 14px rgba(155,125,255,0.4);
+    box-shadow: 0 0 14px rgba(255,182,18,0.4);
   }
   .ai-title { font-family:'Orbitron',monospace; font-size:13px; color:var(--violet-bright); letter-spacing:2px; }
   .ai-response {
@@ -305,18 +306,18 @@
     display:flex; align-items:center; gap:8px;
   }
   .alert-critical {
-    background: rgba(217,70,239,0.12);
-    border: 1px solid rgba(217,70,239,0.4);
+    background: rgba(198,12,48,0.12);
+    border: 1px solid rgba(198,12,48,0.4);
     color: var(--magenta-bright);
   }
   .alert-warning {
-    background: rgba(243,156,18,0.12);
-    border: 1px solid rgba(243,156,18,0.4);
+    background: rgba(200,145,28,0.12);
+    border: 1px solid rgba(200,145,28,0.4);
     color: var(--gold-bright);
   }
   .alert-ok {
-    background: rgba(34,197,94,0.1);
-    border: 1px solid rgba(34,197,94,0.3);
+    background: rgba(107,155,94,0.1);
+    border: 1px solid rgba(107,155,94,0.3);
     color: var(--green-bright);
   }
 
@@ -342,14 +343,14 @@
   .input-unit { color:var(--cyan-bright); }
   .bm-input, .bm-select {
     background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(155,125,255,0.25);
+    border: 1px solid rgba(255,182,18,0.25);
     border-radius:6px; padding:9px 12px;
     color: var(--white); font-family:'Space Mono',monospace; font-size:13px;
     width:100%; outline:none;
     transition: border-color 0.2s, box-shadow 0.2s;
   }
-  .bm-input:focus, .bm-select:focus { border-color:var(--violet-bright); box-shadow:0 0 0 2px rgba(155,125,255,0.15); }
-  .bm-input::placeholder { color:rgba(142,131,184,0.5); }
+  .bm-input:focus, .bm-select:focus { border-color:var(--violet-bright); box-shadow:0 0 0 2px rgba(255,182,18,0.15); }
+  .bm-input::placeholder { color:rgba(138,146,160,0.5); }
   .bm-select {
     appearance:none; -webkit-appearance:none;
     padding-right: 32px;
@@ -360,19 +361,19 @@
     background-repeat: no-repeat;
   }
   .bm-select option {
-    background: #14102a;
-    color: #ece8ff;
+    background: #1A2028;
+    color: #FBF7F0;
     font-family: 'Space Mono', monospace;
     font-size: 13px;
     padding: 8px;
   }
   .bm-select option:checked {
-    background: #6d4aff;
+    background: #C8911C;
     color: #ffffff;
     font-weight: 700;
   }
   .bm-select option:disabled {
-    color: #8e83b8;
+    color: #8A92A0;
   }
 
   /* Risk gauge */
@@ -425,10 +426,10 @@
     display:flex; align-items:center; justify-content:center;
     font-family:'Orbitron',monospace; font-size:11px; font-weight:700;
   }
-  .ln-1{background:rgba(109,74,255,0.3);color:var(--violet-bright);border:1px solid var(--violet);}
-  .ln-2{background:rgba(217,70,239,0.25);color:var(--magenta-bright);border:1px solid var(--magenta);}
-  .ln-3{background:rgba(34,197,94,0.2);color:var(--green-bright);border:1px solid var(--green);}
-  .ln-4{background:rgba(26,214,214,0.2);color:var(--cyan-bright);border:1px solid var(--cyan);}
+  .ln-1{background:rgba(200,145,28,0.3);color:var(--violet-bright);border:1px solid var(--violet);}
+  .ln-2{background:rgba(198,12,48,0.25);color:var(--magenta-bright);border:1px solid var(--magenta);}
+  .ln-3{background:rgba(107,155,94,0.2);color:var(--green-bright);border:1px solid var(--green);}
+  .ln-4{background:rgba(191,176,136,0.2);color:var(--cyan-bright);border:1px solid var(--cyan);}
   .layer-text h4 { font-size:14px; font-weight:700; margin-bottom:3px; }
   .layer-text p { font-size:12px; color:var(--muted); line-height:1.5; }
 
@@ -442,8 +443,8 @@
 
   /* Disclaimer */
   .disclaimer {
-    background: rgba(243,156,18,0.06);
-    border: 1px solid rgba(243,156,18,0.25);
+    background: rgba(200,145,28,0.06);
+    border: 1px solid rgba(200,145,28,0.25);
     border-radius:8px; padding:14px 18px;
     margin-bottom:24px;
     font-size:12px; color:var(--gold-bright);
@@ -470,7 +471,7 @@
     letter-spacing:1px; transition:all 0.2s;
     display:flex; align-items:center; gap:8px;
   }
-  .generate-btn:hover{box-shadow:0 0 22px rgba(155,125,255,0.4); transform: translateY(-1px);}
+  .generate-btn:hover{box-shadow:0 0 22px rgba(255,182,18,0.4); transform: translateY(-1px);}
   .generate-btn:disabled{opacity:0.5;cursor:not-allowed; transform:none;}
 
   .timestamp {
@@ -496,17 +497,17 @@
       <svg viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#9b7dff"/>
-            <stop offset="100%" stop-color="#d946ef"/>
+            <stop offset="0%" stop-color="#FFB612"/>
+            <stop offset="100%" stop-color="#C60C30"/>
           </linearGradient>
         </defs>
         <path d="M20 6 C12 6, 8 12, 9 18 C7 19, 6 22, 8 25 C7 28, 10 32, 14 31 C16 33, 18 33, 20 32 C22 33, 24 33, 26 31 C30 32, 33 28, 32 25 C34 22, 33 19, 31 18 C32 12, 28 6, 20 6 Z" fill="url(#bg-grad)" opacity="0.95"/>
-        <path d="M20 8 L20 32 M14 13 L14 28 M26 13 L26 28" stroke="#0a0612" stroke-width="0.8" fill="none" opacity="0.5"/>
-        <circle cx="14" cy="16" r="1.2" fill="#56e8e8"/>
-        <circle cx="26" cy="16" r="1.2" fill="#56e8e8"/>
-        <circle cx="20" cy="22" r="1.2" fill="#56e8e8"/>
-        <circle cx="16" cy="26" r="1.2" fill="#56e8e8"/>
-        <circle cx="24" cy="26" r="1.2" fill="#56e8e8"/>
+        <path d="M20 8 L20 32 M14 13 L14 28 M26 13 L26 28" stroke="#101820" stroke-width="0.8" fill="none" opacity="0.5"/>
+        <circle cx="14" cy="16" r="1.2" fill="#E0D5BC"/>
+        <circle cx="26" cy="16" r="1.2" fill="#E0D5BC"/>
+        <circle cx="20" cy="22" r="1.2" fill="#E0D5BC"/>
+        <circle cx="16" cy="26" r="1.2" fill="#E0D5BC"/>
+        <circle cx="24" cy="26" r="1.2" fill="#E0D5BC"/>
       </svg>
     </div>
     <div>
@@ -777,16 +778,16 @@
           <svg viewBox="0 0 240 140">
             <defs>
               <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="#22c55e"/>
-                <stop offset="40%" stop-color="#f1c40f"/>
-                <stop offset="75%" stop-color="#f39c12"/>
-                <stop offset="100%" stop-color="#d946ef"/>
+                <stop offset="0%" stop-color="#6B9B5E"/>
+                <stop offset="40%" stop-color="#FFB612"/>
+                <stop offset="75%" stop-color="#C8911C"/>
+                <stop offset="100%" stop-color="#C60C30"/>
               </linearGradient>
             </defs>
             <path d="M 20 120 A 100 100 0 0 1 220 120" stroke="rgba(255,255,255,0.06)" stroke-width="14" fill="none" stroke-linecap="round"/>
             <path id="gauge-fill" d="M 20 120 A 100 100 0 0 1 220 120" stroke="url(#gauge-grad)" stroke-width="14" fill="none" stroke-linecap="round" stroke-dasharray="314 314" stroke-dashoffset="314" style="transition: stroke-dashoffset 0.8s cubic-bezier(.4,0,.2,1);"/>
-            <line id="gauge-needle" x1="120" y1="120" x2="120" y2="35" stroke="#9b7dff" stroke-width="2.5" stroke-linecap="round" style="transform-origin: 120px 120px; transform: rotate(-90deg); transition: transform 0.8s cubic-bezier(.4,0,.2,1); filter: drop-shadow(0 0 4px rgba(155,125,255,0.8));"/>
-            <circle cx="120" cy="120" r="6" fill="#221a44" stroke="#9b7dff" stroke-width="2"/>
+            <line id="gauge-needle" x1="120" y1="120" x2="120" y2="35" stroke="#FFB612" stroke-width="2.5" stroke-linecap="round" style="transform-origin: 120px 120px; transform: rotate(-90deg); transition: transform 0.8s cubic-bezier(.4,0,.2,1); filter: drop-shadow(0 0 4px rgba(255,182,18,0.8));"/>
+            <circle cx="120" cy="120" r="6" fill="#3A434B" stroke="#FFB612" stroke-width="2"/>
           </svg>
         </div>
         <div class="risk-readout">
@@ -1071,7 +1072,7 @@ function drawSparkline(canvasId, status, pct) {
   if (sparkData[canvasId].length > 20) sparkData[canvasId].shift();
   ctx.clearRect(0, 0, w, h);
   const pts = sparkData[canvasId];
-  const color = status === 'normal' ? '#4ade80' : status === 'elevated' ? '#f1c40f' : '#ec79ff';
+  const color = status === 'normal' ? '#8FBF7E' : status === 'elevated' ? '#FFB612' : '#E04B5E';
   ctx.beginPath();
   ctx.moveTo(0, h - pts[0] * h);
   for (let i = 1; i < pts.length; i++) {
@@ -1216,7 +1217,7 @@ function drawDifferentialChart() {
   const yToPx = v => mt + ph - (v / ymax) * ph;
 
   // Grid
-  ctx.strokeStyle = 'rgba(155,125,255,0.08)';
+  ctx.strokeStyle = 'rgba(255,182,18,0.08)';
   ctx.lineWidth = 1;
   for (let i = 0; i <= 6; i++) {
     const x = ml + (i / 6) * pw;
@@ -1228,24 +1229,24 @@ function drawDifferentialChart() {
   }
 
   // Region shading: AD high p-tau217, low ratio (bottom right)
-  ctx.fillStyle = 'rgba(26,214,214,0.07)';
+  ctx.fillStyle = 'rgba(191,176,136,0.07)';
   ctx.fillRect(xToPx(0.5), yToPx(1.4), xToPx(xmax)-xToPx(0.5), yToPx(0)-yToPx(1.4));
   // CTE region: low-mid p-tau217, high ratio (top left)
-  ctx.fillStyle = 'rgba(217,70,239,0.08)';
+  ctx.fillStyle = 'rgba(198,12,48,0.08)';
   ctx.fillRect(xToPx(0), yToPx(ymax), xToPx(0.6)-xToPx(0), yToPx(1.4)-yToPx(ymax));
   // Mixed region: high both (top right)
-  ctx.fillStyle = 'rgba(243,156,18,0.06)';
+  ctx.fillStyle = 'rgba(200,145,28,0.06)';
   ctx.fillRect(xToPx(0.5), yToPx(ymax), xToPx(xmax)-xToPx(0.5), yToPx(1.4)-yToPx(ymax));
   // Control: low both (bottom left)
-  ctx.fillStyle = 'rgba(34,197,94,0.06)';
+  ctx.fillStyle = 'rgba(107,155,94,0.06)';
   ctx.fillRect(xToPx(0), yToPx(1.4), xToPx(0.5)-xToPx(0), yToPx(0)-yToPx(1.4));
 
   // Region labels
   ctx.font = "bold 11px 'Space Mono', monospace";
-  ctx.fillStyle = 'rgba(74,222,128,0.7)';   ctx.fillText('CONTROL',  ml+10, yToPx(0.3));
-  ctx.fillStyle = 'rgba(236,121,255,0.85)'; ctx.fillText('CTE',      ml+10, mt+18);
-  ctx.fillStyle = 'rgba(86,232,232,0.85)';  ctx.fillText('AD',       xToPx(0.95), yToPx(0.3));
-  ctx.fillStyle = 'rgba(241,196,15,0.85)';  ctx.fillText('MIXED',    xToPx(0.95), mt+18);
+  ctx.fillStyle = 'rgba(143,191,126,0.7)';   ctx.fillText('CONTROL',  ml+10, yToPx(0.3));
+  ctx.fillStyle = 'rgba(224,75,94,0.85)'; ctx.fillText('CTE',      ml+10, mt+18);
+  ctx.fillStyle = 'rgba(224,213,188,0.85)';  ctx.fillText('AD',       xToPx(0.95), yToPx(0.3));
+  ctx.fillStyle = 'rgba(255,182,18,0.85)';  ctx.fillText('MIXED',    xToPx(0.95), mt+18);
 
   // Axes
   ctx.strokeStyle = 'rgba(255,255,255,0.3)';
@@ -1255,7 +1256,7 @@ function drawDifferentialChart() {
   ctx.stroke();
 
   // Axis labels
-  ctx.fillStyle = '#8e83b8';
+  ctx.fillStyle = '#8A92A0';
   ctx.font = "11px 'Space Mono', monospace";
   ctx.textAlign = 'center';
   ctx.fillText('plasma p-tau217 (pg/mL)', ml + pw/2, h - 14);
@@ -1280,10 +1281,10 @@ function drawDifferentialChart() {
 
   // Plot all 4 profile points (active highlighted)
   const profilePts = [
-    { name:'control', x: 0.18, y: 0.95, color:'#4ade80', label:'Control' },
-    { name:'cte',     x: 0.42, y: 1.95, color:'#ec79ff', label:'CTE' },
-    { name:'ad',      x: 0.94, y: 0.78, color:'#56e8e8', label:'AD' },
-    { name:'mixed',   x: 0.68, y: 1.62, color:'#f1c40f', label:'Mixed' },
+    { name:'control', x: 0.18, y: 0.95, color:'#8FBF7E', label:'Control' },
+    { name:'cte',     x: 0.42, y: 1.95, color:'#E04B5E', label:'CTE' },
+    { name:'ad',      x: 0.94, y: 0.78, color:'#E0D5BC', label:'AD' },
+    { name:'mixed',   x: 0.68, y: 1.62, color:'#FFB612', label:'Mixed' },
   ];
 
   profilePts.forEach(p => {
@@ -1315,7 +1316,7 @@ function drawDifferentialChart() {
   });
 
   // Decision boundary lines (subtle)
-  ctx.strokeStyle = 'rgba(155,125,255,0.25)';
+  ctx.strokeStyle = 'rgba(255,182,18,0.25)';
   ctx.setLineDash([4, 4]);
   ctx.lineWidth = 1;
   ctx.beginPath();
